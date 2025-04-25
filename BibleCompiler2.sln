@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.8.34330.188
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BibleCompiler2", "BibleCompiler2\BibleCompiler2.csproj", "{C58F5925-7769-4176-AC42-7D5A7D9D010D}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{C58F5925-7769-4176-AC42-7D5A7D9D010D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C58F5925-7769-4176-AC42-7D5A7D9D010D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C58F5925-7769-4176-AC42-7D5A7D9D010D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C58F5925-7769-4176-AC42-7D5A7D9D010D}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {9C1EF65F-DD19-4E1F-BA6E-3B601BA0686B}
+	EndGlobalSection
+EndGlobal
