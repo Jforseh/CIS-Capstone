@@ -545,10 +545,10 @@
             this.rdbKbcFirst3.ForeColor = System.Drawing.Color.Black;
             this.rdbKbcFirst3.Location = new System.Drawing.Point(13, 186);
             this.rdbKbcFirst3.Name = "rdbKbcFirst3";
-            this.rdbKbcFirst3.Size = new System.Drawing.Size(304, 33);
+            this.rdbKbcFirst3.Size = new System.Drawing.Size(293, 33);
             this.rdbKbcFirst3.TabIndex = 4;
             this.rdbKbcFirst3.TabStop = true;
-            this.rdbKbcFirst3.Text = "KBC First 3 Words Study Guide";
+            this.rdbKbcFirst3.Text = "KBC First 3 Words Worksheet";
             this.rdbKbcFirst3.UseVisualStyleBackColor = true;
             this.rdbKbcFirst3.CheckedChanged += new System.EventHandler(this.rdbKbcFirst3_CheckedChanged);
             // 
@@ -571,10 +571,10 @@
             this.rdbTbcFirst3.ForeColor = System.Drawing.Color.Black;
             this.rdbTbcFirst3.Location = new System.Drawing.Point(14, 114);
             this.rdbTbcFirst3.Name = "rdbTbcFirst3";
-            this.rdbTbcFirst3.Size = new System.Drawing.Size(303, 33);
+            this.rdbTbcFirst3.Size = new System.Drawing.Size(292, 33);
             this.rdbTbcFirst3.TabIndex = 2;
             this.rdbTbcFirst3.TabStop = true;
-            this.rdbTbcFirst3.Text = "TBC First 3 Words Study Guide";
+            this.rdbTbcFirst3.Text = "TBC First 3 Words Worksheet";
             this.rdbTbcFirst3.UseVisualStyleBackColor = true;
             this.rdbTbcFirst3.CheckedChanged += new System.EventHandler(this.rdbTbcFirst3_CheckedChanged);
             // 
