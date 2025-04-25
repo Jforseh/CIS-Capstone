@@ -76,6 +76,10 @@ namespace BibleCompiler2
                 MessageBox.Show($"The file does not exist at the following path:\n{hardCodedPath}\n\nCurrent Directory:\n{currentDirectory}", 
                                 "File Not Found", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
+
+            // Set the output path relative to the debug directory
+            outputPath = Path.Combine(basePath, "Output Files");
+            lblOutputfilepath.Text = outputPath;
         }
         private void standardFormSetup(Button btnAccept, Button btnCancel)
         {
