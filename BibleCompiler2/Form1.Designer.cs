@@ -593,10 +593,10 @@
             this.rdbKbccompetition.ForeColor = System.Drawing.Color.Black;
             this.rdbKbccompetition.Location = new System.Drawing.Point(13, 294);
             this.rdbKbccompetition.Name = "rdbKbccompetition";
-            this.rdbKbccompetition.Size = new System.Drawing.Size(318, 33);
+            this.rdbKbccompetition.Size = new System.Drawing.Size(179, 33);
             this.rdbKbccompetition.TabIndex = 7;
             this.rdbKbccompetition.TabStop = true;
-            this.rdbKbccompetition.Text = "Kids Bible Challenge Competition";
+            this.rdbKbccompetition.Text = "KBC Competition";
             this.rdbKbccompetition.UseVisualStyleBackColor = true;
             this.rdbKbccompetition.CheckedChanged += new System.EventHandler(this.rdbKbccompetition_CheckedChanged);
             // 
@@ -606,10 +606,10 @@
             this.rdbTbcstudy.ForeColor = System.Drawing.Color.Black;
             this.rdbTbcstudy.Location = new System.Drawing.Point(13, 42);
             this.rdbTbcstudy.Name = "rdbTbcstudy";
-            this.rdbTbcstudy.Size = new System.Drawing.Size(328, 33);
+            this.rdbTbcstudy.Size = new System.Drawing.Size(181, 33);
             this.rdbTbcstudy.TabIndex = 0;
             this.rdbTbcstudy.TabStop = true;
-            this.rdbTbcstudy.Text = "Teen Bible Challenge Study Guide";
+            this.rdbTbcstudy.Text = "TBC Study Guide";
             this.rdbTbcstudy.UseVisualStyleBackColor = true;
             this.rdbTbcstudy.CheckedChanged += new System.EventHandler(this.rdbTbcstudy_CheckedChanged);
             // 
@@ -619,10 +619,10 @@
             this.rdbKbcstudy.ForeColor = System.Drawing.Color.Black;
             this.rdbKbcstudy.Location = new System.Drawing.Point(13, 78);
             this.rdbKbcstudy.Name = "rdbKbcstudy";
-            this.rdbKbcstudy.Size = new System.Drawing.Size(321, 33);
+            this.rdbKbcstudy.Size = new System.Drawing.Size(182, 33);
             this.rdbKbcstudy.TabIndex = 1;
             this.rdbKbcstudy.TabStop = true;
-            this.rdbKbcstudy.Text = "Kids Bible Challenge Study Guide";
+            this.rdbKbcstudy.Text = "KBC Study Guide";
             this.rdbKbcstudy.UseVisualStyleBackColor = true;
             this.rdbKbcstudy.CheckedChanged += new System.EventHandler(this.rdbKbcstudy_CheckedChanged);
             // 
