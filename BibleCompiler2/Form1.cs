@@ -1445,8 +1445,10 @@ namespace BibleCompiler2
             DocX quoteDoc = DocX.Create(docName, DocumentTypes.Document);
             quoteDoc.PageHeight = 792;
             quoteDoc.PageWidth = 612;
-            quoteDoc.MarginTop = margin;
-            quoteDoc.MarginBottom = margin;
+            quoteDoc.MarginTop = 36f;
+            quoteDoc.MarginBottom = 18f;
+            quoteDoc.MarginLeft = 36f;
+            quoteDoc.MarginRight = 36f;
 
             List<Questions> quoteList = questionsActiveList.Where(q => q.type == "Q").ToList();
 
@@ -1469,26 +1471,26 @@ namespace BibleCompiler2
                 string competitionNumber = (tkj == "TBC") ? q.competitionTBC : q.competitionKBC;
                 string title = $"{tkj} Quote Fill-In – C{competitionNumber} {q.book} {q.chapter}:{q.verse}";
                 quoteDoc.InsertParagraph(title)
-                    .Font(font).FontSize(fontSize * 2).Bold().Alignment = Alignment.center;
-                quoteDoc.InsertParagraph().Append("").Font(font).FontSize(spaceFontSize).LineSpacing = 14f;
+                    .Font(font).FontSize(18).Bold().Alignment = Alignment.center;
+                quoteDoc.InsertParagraph().Append("").Font(font).FontSize(18).LineSpacing = 14f;
 
                 // Difficulty 1 (No changes here)
                 string fill1 = maskQuote(q.question, 1);
                 quoteDoc.InsertParagraph(fill1)
-                    .Font(font).FontSize(24).LineSpacing = 14f;
-                quoteDoc.InsertParagraph().Append("").Font(font).FontSize(spaceFontSize * 4).LineSpacing = 14f;
+                    .Font(font).FontSize(18).LineSpacing = 14f;
+                quoteDoc.InsertParagraph().Append("").Font(font).FontSize(18).LineSpacing = 14f;
 
                 // Difficulty 2 (No changes here)
                 string fill2 = maskQuote(q.question, 2);
                 quoteDoc.InsertParagraph(fill2)
-                    .Font(font).FontSize(24).LineSpacing = 14f;
-                quoteDoc.InsertParagraph().Append("").Font(font).FontSize(spaceFontSize * 4).LineSpacing = 14f;
+                    .Font(font).FontSize(18).LineSpacing = 14f;
+                quoteDoc.InsertParagraph().Append("").Font(font).FontSize(18).LineSpacing = 14f;
 
                 // Difficulty 3
                 string fill3 = maskQuote(q.question, 3);
                 // *** CHANGE 3: Store reference to the paragraph containing fill3 ***
                 lastParagraphOfPreviousQuote = quoteDoc.InsertParagraph(fill3); // Store this paragraph
-                lastParagraphOfPreviousQuote.Font(font).FontSize(24).LineSpacing = 14f; // Apply formatting to the stored paragraph
+                lastParagraphOfPreviousQuote.Font(font).FontSize(18).LineSpacing = 14f; // Apply formatting to the stored paragraph
 
                 // Extra space after fill3 is already removed from previous step.
             }
