@@ -58,29 +58,8 @@ namespace BibleCompiler2
         public Form1()
         {
             InitializeComponent();
-
-            // Hard code the input path relative to the debug directory
-            string relativePath = @"Data Files\questions.txt";
-            string basePath = AppDomain.CurrentDomain.BaseDirectory;
-            string hardCodedPath = Path.Combine(basePath, relativePath);
-
-            if (File.Exists(hardCodedPath))
-            {
-                inputPath = hardCodedPath;
-                lblInputfilepath.Text = inputPath;
-                btnInputClicked = true;
-            }
-            else
-            {
-                string currentDirectory = Directory.GetCurrentDirectory();
-                MessageBox.Show($"The file does not exist at the following path:\n{hardCodedPath}\n\nCurrent Directory:\n{currentDirectory}", 
-                                "File Not Found", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-            }
-
-            // Set the output path relative to the debug directory
-            outputPath = Path.Combine(basePath, "Output Files");
-            lblOutputfilepath.Text = outputPath;
         }
+
         private void standardFormSetup(Button btnAccept, Button btnCancel)
         {
             this.Location = new System.Drawing.Point((Screen.PrimaryScreen.WorkingArea.Width - this.Width) / 2, (Screen.PrimaryScreen.Bounds.Height - this.Height) / 2);
@@ -875,6 +854,32 @@ namespace BibleCompiler2
             rdbC4.CheckedChanged += rdbCompNumber_CheckedChanged;
             rdbC5.CheckedChanged += rdbCompNumber_CheckedChanged;
             rdbC6.CheckedChanged += rdbCompNumber_CheckedChanged;
+
+            // Hard code the input path relative to the debug directory
+            string relativePath = @"Data Files\questions.txt";
+            string basePath = AppDomain.CurrentDomain.BaseDirectory;
+            string hardCodedPath = Path.Combine(basePath, relativePath);
+
+            if (File.Exists(hardCodedPath))
+            {
+                inputPath = hardCodedPath;
+                lblInputfilepath.Text = inputPath;
+                btnInputClicked = true;
+                btnSubmit.Enabled = true;
+                pnlDoc.Enabled = true;
+            }
+            else
+            {
+                string currentDirectory = Directory.GetCurrentDirectory();
+                MessageBox.Show($"The file does not exist at the following path:\n{hardCodedPath}\n\nCurrent Directory:\n{currentDirectory}",
+                                "File Not Found", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+
+            // Set the output path relative to the debug directory
+            outputPath = Path.Combine(basePath, "Output Files");
+            lblOutputfilepath.Text = outputPath;
+            btnSubmit.Enabled = true;
+            pnlDoc.Enabled = true;
         }
         // Helper method to return the selected order name (as a string) for the competition.
         private string getCompetitionOrderName()
