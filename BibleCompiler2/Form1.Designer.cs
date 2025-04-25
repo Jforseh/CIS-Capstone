@@ -632,10 +632,10 @@
             this.rdbTbccompetition.ForeColor = System.Drawing.Color.Black;
             this.rdbTbccompetition.Location = new System.Drawing.Point(13, 258);
             this.rdbTbccompetition.Name = "rdbTbccompetition";
-            this.rdbTbccompetition.Size = new System.Drawing.Size(325, 33);
+            this.rdbTbccompetition.Size = new System.Drawing.Size(178, 33);
             this.rdbTbccompetition.TabIndex = 6;
             this.rdbTbccompetition.TabStop = true;
-            this.rdbTbccompetition.Text = "Teen Bible Challenge Competition";
+            this.rdbTbccompetition.Text = "TBC Competition";
             this.rdbTbccompetition.UseVisualStyleBackColor = true;
             this.rdbTbccompetition.CheckedChanged += new System.EventHandler(this.rdbTbccompetition_CheckedChanged);
             // 
