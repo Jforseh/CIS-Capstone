@@ -1184,153 +1184,216 @@ namespace BibleCompiler2
 
         private List<List<Questions>> matchList()
         {
+            int f2sUsed = 0;
+
+            // Store our selected questions for each match
             List<List<Questions>> selectedQs = new List<List<Questions>>();
-            
-            HashSet<string> usedBCV = new HashSet<string>();
 
-            string questionType = "";
-            bool found = false;
-            int competitionNum = selectedCompetitionInt;
+            // Notes
+            // compOrderList gives me the question types
+            // selectedCompetitionInt is the competition number
+            // questionsActiveList is all questions
 
-            createSeed();
-            for (int matchNum = 0; matchNum < 4; matchNum++) // Matches
+            // Create a list of questions for the selected competition
+            Dictionary<string, List<Questions>> compQuestions = new Dictionary<string, List<Questions>>();
+            List<Questions> matchQuestions = new List<Questions>();
+            List<Questions> allUsedQuestions = new List<Questions>();
+            foreach (string questionType in compOrderList)
             {
-                selectedQs.Add(new List<Questions>());
-                //quarList.Clear();
-                for (int questionNum = 0; questionNum < compOrderList.Count; questionNum++) // Go through each question
+                compQuestions[questionType] = new List<Questions>();
+            }
+
+            //List<Questions> compQuestions = new List<Questions>();
+            if (rdbTbccompetition.Checked) // Teens
+            {
+                for (int i=0; i < questionsActiveList.Count; i++)
                 {
-                    bool valid = true;
-                    found = false;
-                    questionType = compOrderList[questionNum];
-                    for (int compSeedNum = 0; compSeedNum < compSeed.Count; compSeedNum++) //
+                    if (questionsActiveList[i].competitionTBC == selectedCompetitionInt.ToString())
                     {
-                        //take the first competion number from the first item in the Verse Count list 
-                        string[] firstLineCompNum = compSeed[compSeedNum].Split('\t'); // Comp number, book, chapter, verse
-                        if (firstLineCompNum[0] == competitionNum.ToString())
+                        if (questionsActiveList[i].type == "V")
                         {
-                            string[] flcn = firstLineCompNum;
-                            for (int j = 0; j < questionsActiveList.Count; j++) // All questions that correlate to tbc/kbc
-                            {
-                                Questions activeQuestion = questionsActiveList[j];
-                                // ToDo: Fix this
-                                if (activeQuestion.competitionTBC != competitionNum.ToString())
-                                {
-                                    continue;
-                                }
-                                valid = true;
-                                for (int count=quarList.Count-1; count>quarList.Count-5; count--)
-                                {
-                                    if (count < 0)
-                                    {
-                                        break; // 4 most recent used bcv
-                                    }
-                                    if (activeQuestion.book == quarList[count].book &&
-                                        activeQuestion.chapter == quarList[count].chapter &&
-                                        activeQuestion.verse == quarList[count].verse)
-                                    {
-                                        Console.WriteLine("ALVIN: " + questionNum.ToString() +" " + activeQuestion.ToString());
-                                        valid = false;
-                                        break;
-                                    }
-                                }
-                                if (!valid)
-                                {
-                                    continue;
-                                }
-                                //if statement that matches the book, chapter, verse, and question type with the Active List
-                                string bcvKey = questionsActiveList[j].book + "" + questionsActiveList[j].chapter + "_" + questionsActiveList[j].verse;
-                                if (!quarList.Contains(questionsActiveList[j]) && 
-                                    !usedBCV.Contains(bcvKey))
-                                {
-                                    usedBCV.Add(bcvKey);
-                                }
-
-                                if (activeQuestion.book == flcn[1] &&
-                                    activeQuestion.chapter == flcn[2] &&
-                                    activeQuestion.verse == flcn[3] &&
-
-                                    activeQuestion.type == questionType 
-                                    && !quarList.Contains(questionsActiveList[j]))
-                                {
-                                    //Add questions to the Quarantine List
-                                    quarList.Add(questionsActiveList[j]);
-                                    mList.Add(matchNum);
-
-                                    // Moves object at i to the end of compSeed
-                                    string temp = compSeed[compSeedNum];
-                                    compSeed.Remove(compSeed[compSeedNum]);
-                                    compSeed.Add(temp);
-
-                                    //compSeed.Add(string.Join("\t", firstLineCompNum));
-                                    lsbTest.Items.Add(questionNum.ToString() + " " + questionsActiveList[j]);
-                                    selectedQs[matchNum].Add(questionsActiveList[j]);
-
-                                    //lsbTest2.Items.Add(temp);
-                                    temp = "";
-                                    found = true;
-                                    break;
-
-                                }
-                                if (questionType == "F2")
-                                {
-                                    this.Text = (!found + (questionType == "F2").ToString() + (compSeed.Count - 1 == compSeedNum).ToString());
-                                }
-
-                            }
-                            if (found)
-                            {
-                                //i = 0;
-                                break;
-                            }
-
-
+                            continue;
                         }
-                        //can you see this
-                        if (!found && (compSeed.Count - 1) == compSeedNum)
-                        {
-                            if (questionType == "F2")
-                            {
-                                //lsbTest.Items.Add(questionNum.ToString() + " Falling from F2 to F");
-                                questionType = "F";
-                                compSeedNum = 0;
-                            }
-                            else
-                            {
-                                // Why does this start at compSeed.Count?
-                                for (int k = quarList.Count - 1; k > 0; k--)
-                                {
-                                    if (mList[k] != matchNum && questionType == quarList[k].type)
-                                    {
-                                        quarList.RemoveAt(k);
-                                        mList.RemoveAt(k);
-                                        compSeedNum = 0;
-                                    }
-                                }
-                                if (compSeedNum != 0) // question wasnt found in mlist
-                                {
-                                    Console.WriteLine("!!! " + matchNum.ToString() + " " + questionType.ToString() + " " + mList[15].ToString() + " " + quarList[15].type.ToString());
-                                }
-                            }
-                        }
-                        else if (!found)
-                        {
-                            //Console.WriteLine(compSeed.Count.ToString() + " " + i.ToString());
-                        }
-
-                    }
-                    // Add default bahavior if we didn't find a question to add here
-                    if (!found)
-                    {
-                        lsbTest.Items.Add(questionNum.ToString());
-                        //Console.WriteLine(h.ToString() + valid.ToString() + compSeed.Count.ToString());
+                        compQuestions[questionsActiveList[i].type].Add(questionsActiveList[i]);
                     }
                 }
-                lsbTest.Items.Add("--------------------------");
+            }
+            else if (rdbKbccompetition.Checked) // Kids
+            {
+                for (int i = 0; i < questionsActiveList.Count; i++)
+                {
+                    if (questionsActiveList[i].competitionKBC == selectedCompetitionInt.ToString())
+                    {
+                        compQuestions[questionsActiveList[i].type].Add(questionsActiveList[i]);
+                    }
+                }
+            }
+
+            // Setup ran
+            var random = new Random(0); // ToDo: Remove the 0
+
+            // For each match
+            int restartsCounter = 0;
+            for (int matchNum=0; matchNum<4; matchNum++)
+            {
+                bool restartingFlag = false;
+                matchQuestions.Clear();
+                // For each question within the match
+                for (int questionNum=0; questionNum<compOrderList.Count; questionNum++)
+                {
+                    string questionType = compOrderList[questionNum];
+                    if (questionType == "F2" && f2sUsed == compQuestions["F2"].Count)
+                    {
+                        questionType = "F";
+                    }
+
+                    // Mandatory:
+                    // 1. Question type must match
+                    //      Handled by dict indexing
+                    //      F2 falls back to F
+
+                    // Priority:
+                    // 1. Question has not been used in the current match
+                    // 2. BCV can't be used in last 3 questions
+                    // 3. Question has not been used in the competition
+                    // 4. BCV has not been used in the match
+
+                    List<Questions> potentialQuestions = new List<Questions>();
+                    List<Questions> nextPotentialQuestions = new List<Questions>();
+
+                    // PRIORITY 1
+                    // Question has not been used in the current match
+                    compQuestions[questionType] = compQuestions[questionType].OrderBy(q => random.Next()).ToList();
+                    foreach (Questions question in compQuestions[questionType])
+                    {
+                        // Check if the question is already used in the match
+                        if (matchQuestions.Contains(question))
+                        {
+                            continue; // Skip to next question
+                        }
+                        potentialQuestions.Add(question);
+                    }
+                    if (potentialQuestions.Count == 0)
+                    {
+                        potentialQuestions = compQuestions[questionType];
+                    }
+
+
+                    // PRIORITY 2
+                    // Check if the question's BCV is already used in the last 4 questions
+                    bool bcvUsed = false;
+                    foreach (Questions question in potentialQuestions)
+                    {
+                        bcvUsed = false;
+                        for (int i = matchQuestions.Count - 1; i >= Math.Max(0, matchQuestions.Count - 3); i--)
+                        {
+                            if (matchQuestions[i].book == question.book &&
+                                matchQuestions[i].chapter == question.chapter &&
+                                matchQuestions[i].verse == question.verse)
+                            {
+                                bcvUsed = true;
+                                break;
+                            }
+                        }
+                        // Add the question to the list of potentials
+                        if (!bcvUsed)
+                        {
+                            nextPotentialQuestions.Add(question);
+                        }
+                    }
+                    if (nextPotentialQuestions.Count ==0)
+                    {
+                        if (restartsCounter < 5)
+                        {
+                            matchQuestions.Clear();
+                            restartsCounter++;
+                            matchNum--;
+                            restartingFlag = true;
+                            lsbTest.Items.Add("RESTARTING MATCH " + matchNum.ToString() + " - " + questionNum.ToString());
+                            break;
+                        }
+                    }
+                    if (nextPotentialQuestions.Count > 0)
+                    {
+                        potentialQuestions = new List<Questions>(nextPotentialQuestions);
+                        nextPotentialQuestions.Clear();
+                    }
+                    else
+                    {
+                        lsbTest.Items.Add("BREAKING WITHIN 3 RULE");
+                    }
+
+                    // PRIORITY 3
+                    foreach (Questions question in potentialQuestions)
+                    {
+                        if (allUsedQuestions.Contains(question))
+                        {
+                            continue; // Skip to next question
+                        }
+                        nextPotentialQuestions.Add(question);
+                    }
+                    // If no questions meet the first priority, reset to all potential questions
+                    if (nextPotentialQuestions.Count > 0)
+                    {
+                        potentialQuestions = new List<Questions>(nextPotentialQuestions);
+                        nextPotentialQuestions.Clear();
+                    }
+
+                    // PRIORITY 4
+                    bool addQuestion = true;
+                    foreach (Questions question in potentialQuestions)
+                    {
+                        // Check if the question's BCV is already used in the match
+                        addQuestion = true;
+                        for (int i = matchQuestions.Count - 1; i >= 0; i--)
+                        {
+                            if (matchQuestions[i].book == question.book &&
+                                matchQuestions[i].chapter == question.chapter &&
+                                matchQuestions[i].verse == question.verse)
+                            {
+                                addQuestion = false;
+                                break;
+                            }
+                        }
+                        //Add the first question that meets the critera
+                        if (addQuestion)
+                        {
+                            matchQuestions.Add(question);
+                            //lsbTest.Items.Add(questionNum.ToString() + " " + question.ToString());
+                            if (question.type == "F2")
+                            {
+                                f2sUsed++;
+                            }
+                            break;
+                        }
+                    }
+                    if (!addQuestion)
+                    {
+                        matchQuestions.Add(potentialQuestions[0]);
+                        //lsbTest.Items.Add(questionNum.ToString() + " " + potentialQuestions[0].ToString());
+                        if (potentialQuestions[0].type == "F2")
+                        {
+                            f2sUsed++;
+                        }
+                    }
+                    
+                }
+                if (!restartingFlag)
+                {
+                    for (int indexer = 0; indexer<matchQuestions.Count; indexer++)
+                    {
+                        Questions question = matchQuestions[indexer];
+                        lsbTest.Items.Add(indexer.ToString()  +" " + question.ToString());
+                        allUsedQuestions.Add(question);
+                    }
+                    selectedQs.Add(matchQuestions);
+                    lsbTest.Items.Add("-------------");
+                    restartsCounter = 0;
+                }
             }
             return selectedQs;
         }
-
-        private void insertDocumentTitleHeader(DocX compDocument, int matchNumber)
+                private void insertDocumentTitleHeader(DocX compDocument, int matchNumber)
         {
             string titleText = $"{tkj} {questionsActiveList[6].book}: Competition {getCompetitionNumberName()} - Match {matchNumber}";
             Table titleTable = compDocument.AddTable(1, 3);
