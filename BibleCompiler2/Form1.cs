@@ -463,8 +463,10 @@ namespace BibleCompiler2
             }
 
             // --- Populate Main Match Questions ---
-            List<List<Questions>> selectedQs = matchList(); // Populates quarList and mList (Crucial this works somewhat)
-
+            // Usage
+            var questions = matchList(); // Populates quarList and mList (Crucial this works somewhat)
+            List<List<Questions>> selectedQs = questions.Item1;
+            List<List<Questions>> extraQs = questions.Item2;
             // --- Prepare Output Document ---
             competitionDocName = Path.Combine(outputPath, filePrefix + " Competition Forms",
                  filePrefix + " " + tkj + " Competition " + getCompetitionNumberName() + " " + getCompetitionOrderName() + " Questions.docx");
@@ -507,31 +509,37 @@ namespace BibleCompiler2
                     List<Questions> mainQuestionsThisMatch = new List<Questions>(); // Store questions added by inner loop
 
                     // Writes the standard questions
-                    for (int j = 1; j <= num; j++)
+                    for (int j = 0; j < selectedQs[i - 1].Count; j++)
                     {
-                        insertQuestionFormattedTable(compDocument, selectedQs[i - 1][j - 1], j.ToString());
-                        Console.WriteLine(selectedQs[i - 1][j - 1].ToString());
+                        if (compExtraList[j] == "B")
+                        {
+                            insertBonusOrNewQuizzerHeader(compDocument, "THIS IS A BONUS QUESTION FOR THOSE WHO HAVE NOT ANSWERED A QUESTION CORRECTLY");
+                            //Console.WriteLine(selectedQs[i - 1][j].ToString());
+                        }
+                        else if (compExtraList[j] == "NQ")
+                        {
+                            insertBonusOrNewQuizzerHeader(compDocument, "THIS IS A NEW QUIZZER ONLY QUESTION");
+                            //Console.WriteLine(selectedQs[i - 1][j].ToString());
+                        }
+                        insertQuestionFormattedTable(compDocument, selectedQs[i - 1][j], compNumberList[j].ToString());
+                        //Console.WriteLine(selectedQs[i - 1][j].ToString());
+
                     } // End inner loop 'j'
                     pageBreak();
 
-                    // --- EXTRAS LOGIC (Call helper with updated used set) ---
-                    List<Questions> matchExtras = selectOrderedExtraQuestions(allQuestionsForSelectedComp, questionsUsedSoFar);
 
-                    if (num < selectedQs[i - 1].Count)
+                    // --- EXTRAS LOGIC (Call helper with updated used set) ---
+
+
+                    // Insert header and questions
+                    insertExtraSubsectionHeader(compDocument, "Extra Questions"); // Place header correctly
+                    for (int j = 0; j < extraQs[i - 1].Count; j++)
                     {
-                        // Insert header and questions
-                        insertExtraSubsectionHeader(compDocument, "Extra Questions"); // Place header correctly
-                        for (int j = num; j < selectedQs[i - 1].Count; j++)
-                        {
-                            // Use the CORRECT insert function for extras
-                            insertQuestionFormattedTable(compDocument, selectedQs[i - 1][j], "__");
-                        }
-                        Console.WriteLine($"Match {i}: Added {matchExtras.Count} extra questions.");
+                        // Use the CORRECT insert function for extras
+                        insertQuestionFormattedTable(compDocument, extraQs[i - 1][j], "__");
                     }
-                    else
-                    {
-                        Console.WriteLine($"Match {i}: No extra questions added.");
-                    }
+
+
 
 
                     // --- PAGE BREAK LOGIC---
@@ -1182,12 +1190,15 @@ namespace BibleCompiler2
 
         }
 
-        private List<List<Questions>> matchList()
+        private (List<List<Questions>>, List<List<Questions>>) matchList()
         {
+            //ToDo Remove CreateSeed
+            createSeed();
             int f2sUsed = 0;
 
             // Store our selected questions for each match
             List<List<Questions>> selectedQs = new List<List<Questions>>();
+            List<List<Questions>> extraQs = new List<List<Questions>>();
 
             // Notes
             // compOrderList gives me the question types
@@ -1202,7 +1213,6 @@ namespace BibleCompiler2
             {
                 compQuestions[questionType] = new List<Questions>();
             }
-
             //List<Questions> compQuestions = new List<Questions>();
             if (rdbTbccompetition.Checked) // Teens
             {
@@ -1224,6 +1234,10 @@ namespace BibleCompiler2
                 {
                     if (questionsActiveList[i].competitionKBC == selectedCompetitionInt.ToString())
                     {
+                        if (questionsActiveList[i].type == "V")
+                        {
+                            continue;
+                        }
                         compQuestions[questionsActiveList[i].type].Add(questionsActiveList[i]);
                     }
                 }
@@ -1254,7 +1268,7 @@ namespace BibleCompiler2
 
                     // Priority:
                     // 1. Question has not been used in the current match
-                    // 2. BCV can't be used in last 3 questions
+                    // 2. BCV can't be used in last 3 questions                    
                     // 3. Question has not been used in the competition
                     // 4. BCV has not been used in the match
 
@@ -1303,7 +1317,7 @@ namespace BibleCompiler2
                     }
                     if (nextPotentialQuestions.Count ==0)
                     {
-                        if (restartsCounter < 5)
+                        if (restartsCounter < 10)
                         {
                             matchQuestions.Clear();
                             restartsCounter++;
@@ -1337,6 +1351,10 @@ namespace BibleCompiler2
                     {
                         potentialQuestions = new List<Questions>(nextPotentialQuestions);
                         nextPotentialQuestions.Clear();
+                    }
+                    else
+                    {
+                        lsbTest.Items.Add(questionNum.ToString() + "BREAKING USED IN COMPETITION RULE");
                     }
 
                     // PRIORITY 4
@@ -1383,15 +1401,74 @@ namespace BibleCompiler2
                     for (int indexer = 0; indexer<matchQuestions.Count; indexer++)
                     {
                         Questions question = matchQuestions[indexer];
-                        lsbTest.Items.Add(indexer.ToString()  +" " + question.ToString());
+                        lsbTest.Items.Add(indexer.ToString()  + " " + question.ToString());
                         allUsedQuestions.Add(question);
                     }
                     selectedQs.Add(matchQuestions);
                     lsbTest.Items.Add("-------------");
                     restartsCounter = 0;
+
+                    //Create ExtraQs
+                    // 3 G, 1 F, 1 R, 1 M, 1 Q
+                    // Only Priority
+                    // 1. Question has not been used in the current match
+                    extraQs.Add(new List<Questions>());
+                    int addedGs = 0;
+                    for (int i=0; i<compQuestions["G"].Count; i++)
+                    {
+                        // If we've added all our G questions, get out
+                        if (addedGs == 3)
+                        {
+                            break;
+                        }
+                        // If number opf remaining questions is <= number still needed, add them without checking
+                        if (compQuestions["G"].Count - i <= 3-addedGs)
+                        {
+                            addedGs++;
+                            extraQs[matchNum].Add(compQuestions["G"][i]);
+                            if (matchQuestions.Contains(compQuestions["G"][i]))
+                            {
+                                Console.WriteLine("G Force Added for" + matchNum);
+                            }                            
+                            continue;
+                        }
+                        // If our G question was already used in the match, skip it
+                        if (matchQuestions.Contains(compQuestions["G"][i]))
+                        {
+                            continue;
+                        }
+                        // Add the G questions to our extras
+                        addedGs++;
+                        extraQs[matchNum].Add(compQuestions["G"][i]);
+                    }
+                    string[] questionTypes = { "F", "R", "M", "Q" };
+                    foreach (string T in questionTypes)
+                    {
+                        for (int i=0; i<compQuestions[T].Count; i++)
+                        {
+                            // If number opf remaining questions is <= number still needed, add them without checking
+                            if (compQuestions[T].Count - i <= 1)
+                            {
+                                extraQs[matchNum].Add(compQuestions[T][i]);
+                                if (matchQuestions.Contains(compQuestions[T][i]))
+                                {
+                                    Console.WriteLine(T + " Force Added for " + matchNum);
+                                }
+                                break;
+                            }
+                            // If our question was already used in the match, skip it
+                            if (matchQuestions.Contains(compQuestions[T][i]))
+                            {
+                                continue;
+                            }
+                            extraQs[matchNum].Add(compQuestions[T][i]);
+                            break;
+                        }
+                    }
                 }
+
             }
-            return selectedQs;
+            return (selectedQs, extraQs);
         }
                 private void insertDocumentTitleHeader(DocX compDocument, int matchNumber)
         {
