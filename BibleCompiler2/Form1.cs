@@ -1158,7 +1158,8 @@ namespace BibleCompiler2
             compSeed.Clear();
             this.Text = quarList.Count.ToString();
             //lsbTest.Items.Clear();
-            var seed = new Random();
+            //ToDo: Undo this
+            var seed = new Random(0);
             for (int i = 0; i < verseCount.Count; i++)
             {
                 int seednum = seed.Next(0, verseCount.Count);
@@ -1184,61 +1185,86 @@ namespace BibleCompiler2
         private List<List<Questions>> matchList()
         {
             List<List<Questions>> selectedQs = new List<List<Questions>>();
+            
             HashSet<string> usedBCV = new HashSet<string>();
+
             string questionType = "";
             bool found = false;
-            int c = selectedCompetitionInt;
+            int competitionNum = selectedCompetitionInt;
+
             createSeed();
-            for (int g = 0; g < 4; g++)
+            for (int matchNum = 0; matchNum < 4; matchNum++) // Matches
             {
                 selectedQs.Add(new List<Questions>());
                 //quarList.Clear();
-                for (int h = 0; h < compOrderList.Count; h++)
+                for (int questionNum = 0; questionNum < compOrderList.Count; questionNum++) // Go through each question
                 {
                     bool valid = true;
                     found = false;
-                    questionType = compOrderList[h];
-                    for (int i = 0; i < compSeed.Count; i++)
+                    questionType = compOrderList[questionNum];
+                    for (int compSeedNum = 0; compSeedNum < compSeed.Count; compSeedNum++) //
                     {
                         //take the first competion number from the first item in the Verse Count list 
-                        string[] firstLineCompNum = compSeed[i].Split('\t');
-                        if (firstLineCompNum[0] == c.ToString())
+                        string[] firstLineCompNum = compSeed[compSeedNum].Split('\t'); // Comp number, book, chapter, verse
+                        if (firstLineCompNum[0] == competitionNum.ToString())
                         {
                             string[] flcn = firstLineCompNum;
-                            for (int j = 0; j < questionsActiveList.Count; j++)
+                            for (int j = 0; j < questionsActiveList.Count; j++) // All questions that correlate to tbc/kbc
                             {
-                                valid = true;
-                                if (quarList.Count > 4)
+                                Questions activeQuestion = questionsActiveList[j];
+                                // ToDo: Fix this
+                                if (activeQuestion.competitionTBC != competitionNum.ToString())
                                 {
-                                    int count = quarList.Count - 1;
-                                    while (!((count == 0) || count == quarList.Count - 4))
+                                    continue;
+                                }
+                                valid = true;
+                                for (int count=quarList.Count-1; count>quarList.Count-5; count--)
+                                {
+                                    if (count < 0)
                                     {
-                                        if (questionsActiveList[j].book == quarList[count].book && questionsActiveList[j].chapter == quarList[count].chapter && questionsActiveList[j].verse == quarList[count].verse)
-                                        {
-                                            valid = false;
-                                            break;
-                                        }
-                                        count--;
+                                        break; // 4 most recent used bcv
                                     }
+                                    if (activeQuestion.book == quarList[count].book &&
+                                        activeQuestion.chapter == quarList[count].chapter &&
+                                        activeQuestion.verse == quarList[count].verse)
+                                    {
+                                        Console.WriteLine("ALVIN: " + questionNum.ToString() +" " + activeQuestion.ToString());
+                                        valid = false;
+                                        break;
+                                    }
+                                }
+                                if (!valid)
+                                {
+                                    continue;
                                 }
                                 //if statement that matches the book, chapter, verse, and question type with the Active List
                                 string bcvKey = questionsActiveList[j].book + "" + questionsActiveList[j].chapter + "_" + questionsActiveList[j].verse;
-                                if (valid && !quarList.Contains(questionsActiveList[j]) && !usedBCV.Contains(bcvKey))
+                                if (!quarList.Contains(questionsActiveList[j]) && 
+                                    !usedBCV.Contains(bcvKey))
                                 {
                                     usedBCV.Add(bcvKey);
                                 }
-                                if (valid && questionsActiveList[j].book == flcn[1] && questionsActiveList[j].chapter == flcn[2] && questionsActiveList[j].verse == flcn[3] && questionsActiveList[j].type == questionType && !quarList.Contains(questionsActiveList[j]))
+
+                                if (activeQuestion.book == flcn[1] &&
+                                    activeQuestion.chapter == flcn[2] &&
+                                    activeQuestion.verse == flcn[3] &&
+
+                                    activeQuestion.type == questionType 
+                                    && !quarList.Contains(questionsActiveList[j]))
                                 {
                                     //Add questions to the Quarantine List
                                     quarList.Add(questionsActiveList[j]);
-                                    mList.Add(g);
+                                    mList.Add(matchNum);
 
-                                    string temp = compSeed[i];
-                                    compSeed.Remove(compSeed[i]);
+                                    // Moves object at i to the end of compSeed
+                                    string temp = compSeed[compSeedNum];
+                                    compSeed.Remove(compSeed[compSeedNum]);
                                     compSeed.Add(temp);
+
                                     //compSeed.Add(string.Join("\t", firstLineCompNum));
-                                    lsbTest.Items.Add(h.ToString() + " " + questionsActiveList[j]);
-                                    selectedQs[g].Add(questionsActiveList[j]);
+                                    lsbTest.Items.Add(questionNum.ToString() + " " + questionsActiveList[j]);
+                                    selectedQs[matchNum].Add(questionsActiveList[j]);
+
                                     //lsbTest2.Items.Add(temp);
                                     temp = "";
                                     found = true;
@@ -1247,39 +1273,56 @@ namespace BibleCompiler2
                                 }
                                 if (questionType == "F2")
                                 {
-                                    this.Text = (!found + (questionType == "F2").ToString() + (compSeed.Count - 1 == i).ToString());
+                                    this.Text = (!found + (questionType == "F2").ToString() + (compSeed.Count - 1 == compSeedNum).ToString());
                                 }
 
                             }
                             if (found)
                             {
-
                                 //i = 0;
                                 break;
                             }
 
 
                         }
-                        if (valid && !found && compSeed.Count - 1 == i)
+                        //can you see this
+                        if (!found && (compSeed.Count - 1) == compSeedNum)
                         {
                             if (questionType == "F2")
                             {
+                                //lsbTest.Items.Add(questionNum.ToString() + " Falling from F2 to F");
                                 questionType = "F";
-                                i = 0;
+                                compSeedNum = 0;
                             }
                             else
                             {
-                                for (int k = compSeed.Count - 1; k > 0; k--)
+                                // Why does this start at compSeed.Count?
+                                for (int k = quarList.Count - 1; k > 0; k--)
                                 {
-                                    if (mList[k] != g && questionType == quarList[k].type)
+                                    if (mList[k] != matchNum && questionType == quarList[k].type)
                                     {
                                         quarList.RemoveAt(k);
                                         mList.RemoveAt(k);
-                                        i = 0;
+                                        compSeedNum = 0;
                                     }
+                                }
+                                if (compSeedNum != 0) // question wasnt found in mlist
+                                {
+                                    Console.WriteLine("!!! " + matchNum.ToString() + " " + questionType.ToString() + " " + mList[15].ToString() + " " + quarList[15].type.ToString());
                                 }
                             }
                         }
+                        else if (!found)
+                        {
+                            //Console.WriteLine(compSeed.Count.ToString() + " " + i.ToString());
+                        }
+
+                    }
+                    // Add default bahavior if we didn't find a question to add here
+                    if (!found)
+                    {
+                        lsbTest.Items.Add(questionNum.ToString());
+                        //Console.WriteLine(h.ToString() + valid.ToString() + compSeed.Count.ToString());
                     }
                 }
                 lsbTest.Items.Add("--------------------------");
