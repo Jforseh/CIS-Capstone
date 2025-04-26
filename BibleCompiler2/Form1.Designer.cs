@@ -458,6 +458,7 @@
             this.rdb13.TabStop = true;
             this.rdb13.Text = "13 Questions";
             this.rdb13.UseVisualStyleBackColor = true;
+            this.rdb13.CheckedChanged += new System.EventHandler(this.rdb13_CheckedChanged_1);
             // 
             // rdb25
             // 
@@ -470,6 +471,7 @@
             this.rdb25.TabStop = true;
             this.rdb25.Text = "25 Questions ";
             this.rdb25.UseVisualStyleBackColor = true;
+            this.rdb25.CheckedChanged += new System.EventHandler(this.rdb25_CheckedChanged_1);
             // 
             // rdb12
             // 
@@ -482,6 +484,7 @@
             this.rdb12.TabStop = true;
             this.rdb12.Text = "12 Questions";
             this.rdb12.UseVisualStyleBackColor = true;
+            this.rdb12.CheckedChanged += new System.EventHandler(this.rdb12_CheckedChanged_1);
             // 
             // rdb20
             // 
@@ -494,6 +497,7 @@
             this.rdb20.TabStop = true;
             this.rdb20.Text = "20 Questions";
             this.rdb20.UseVisualStyleBackColor = true;
+            this.rdb20.CheckedChanged += new System.EventHandler(this.rdb20_CheckedChanged_1);
             // 
             // rdb10
             // 
@@ -506,6 +510,7 @@
             this.rdb10.TabStop = true;
             this.rdb10.Text = "10 Questions ";
             this.rdb10.UseVisualStyleBackColor = true;
+            this.rdb10.CheckedChanged += new System.EventHandler(this.rdb10_CheckedChanged_1);
             // 
             // pnlDoc
             // 

@@ -735,7 +735,7 @@ namespace BibleCompiler2
                         if (questions[i].book == fq[k].book && questions[i].chapter == fq[k].chapter && questions[i].verse == fq[k].verse)
                         {
                             questions[i].question = fq[k].question;
-                            questions[i].answer = fq[k].answer + "* " + fq[k + 1].question.Replace(" - ", " ").Replace("...", " ") + fq[k + 1].answer + fq[k + 2].question.Replace(" - ", " ").Replace("...", " ") + fq[k + 2].answer;
+                            questions[i].answer = fq[k].answer + "* " + fq[k + 1].question.Replace(" - ", " ").Replace("...", " ") + fq[k + 1].answer;
                         }
                     }
 
@@ -1823,45 +1823,48 @@ namespace BibleCompiler2
             var rb = sender as RadioButton;
             if (rb == null || !rb.Checked) return;      // ignore un‑check
 
-            btnSubmit.Enabled = btnOutputClicked && btnInputClicked;
-            countTypes();                               // update type counts
-        }
-        // Competition # radio‑buttons: enable Submit when paths set,
-        // then refresh the type counts for the newly‑selected competition.
-        private void rdbC1_CheckedChanged(object sender, EventArgs e)
-        {
-            if (!rdbC1.Checked) return;
-            btnSubmit.Enabled = btnOutputClicked && btnInputClicked;
+            btnSubmit.Enabled = !string.IsNullOrEmpty(inputPath) && !string.IsNullOrEmpty(outputPath);
             countTypes();                             // update ListBox
         }
+        private void rdbC1_CheckedChanged(object sender, EventArgs e)
+        {
+            if (!rdbC2.Checked) return;
+            btnSubmit.Enabled = !string.IsNullOrEmpty(inputPath) && !string.IsNullOrEmpty(outputPath);
+            countTypes();
+        }
+        
         private void rdbC2_CheckedChanged(object sender, EventArgs e)
         {
             if (!rdbC2.Checked) return;
-            btnSubmit.Enabled = btnOutputClicked && btnInputClicked;
+            btnSubmit.Enabled = !string.IsNullOrEmpty(inputPath) && !string.IsNullOrEmpty(outputPath);
             countTypes();
         }
+
         private void rdbC3_CheckedChanged(object sender, EventArgs e)
         {
             if (!rdbC3.Checked) return;
-            btnSubmit.Enabled = btnOutputClicked && btnInputClicked;
+            btnSubmit.Enabled = !string.IsNullOrEmpty(inputPath) && !string.IsNullOrEmpty(outputPath);
             countTypes();
         }
+
         private void rdbC4_CheckedChanged(object sender, EventArgs e)
         {
             if (!rdbC4.Checked) return;
-            btnSubmit.Enabled = btnOutputClicked && btnInputClicked;
+            btnSubmit.Enabled = !string.IsNullOrEmpty(inputPath) && !string.IsNullOrEmpty(outputPath);
             countTypes();
         }
+
         private void rdbC5_CheckedChanged(object sender, EventArgs e)
         {
             if (!rdbC5.Checked) return;
-            btnSubmit.Enabled = btnOutputClicked && btnInputClicked;
+            btnSubmit.Enabled = !string.IsNullOrEmpty(inputPath) && !string.IsNullOrEmpty(outputPath);
             countTypes();
         }
+
         private void rdbC6_CheckedChanged(object sender, EventArgs e)
         {
             if (!rdbC6.Checked) return;
-            btnSubmit.Enabled = btnOutputClicked && btnInputClicked;
+            btnSubmit.Enabled = !string.IsNullOrEmpty(inputPath) && !string.IsNullOrEmpty(outputPath);
             countTypes();
         }
 
@@ -1923,6 +1926,31 @@ namespace BibleCompiler2
             {
                 return;
             }
+        }
+
+        private void rdb25_CheckedChanged_1(object sender, EventArgs e)
+        {
+            btnSubmit.Enabled = !string.IsNullOrEmpty(inputPath) && !string.IsNullOrEmpty(outputPath);
+        }
+
+        private void rdb20_CheckedChanged_1(object sender, EventArgs e)
+        {
+            btnSubmit.Enabled = !string.IsNullOrEmpty(inputPath) && !string.IsNullOrEmpty(outputPath);
+        }
+
+        private void rdb13_CheckedChanged_1(object sender, EventArgs e)
+        {
+            btnSubmit.Enabled = !string.IsNullOrEmpty(inputPath) && !string.IsNullOrEmpty(outputPath);
+        }
+
+        private void rdb12_CheckedChanged_1(object sender, EventArgs e)
+        {
+            btnSubmit.Enabled = !string.IsNullOrEmpty(inputPath) && !string.IsNullOrEmpty(outputPath);
+        }
+
+        private void rdb10_CheckedChanged_1(object sender, EventArgs e)
+        {
+            btnSubmit.Enabled = !string.IsNullOrEmpty(inputPath) && !string.IsNullOrEmpty(outputPath);
         }
 
 
