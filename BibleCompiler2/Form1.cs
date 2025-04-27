@@ -27,7 +27,7 @@ namespace BibleCompiler2
         string inputPath;
         string inputPath2 = Path.Combine(inputDataPath, FILENAME2);
         static string docName = @"Competition Study Guide " + tkj + ".docx";
-        string output = "Output Files";
+        //string output = "Output Files";
         bool btnInputClicked = false;
         bool btnOutputClicked = false;
         DocX document = DocX.Create(docName, DocumentTypes.Document);
@@ -449,28 +449,28 @@ namespace BibleCompiler2
             List<string> compExtraList = new List<string>();
             if (File.Exists(competitionFilePath))
             {
-                while(true)
+                while (true)
                 {
-                try
-                {
-                    foreach (string line in File.ReadAllLines(competitionFilePath))
+                    try
+                    {
+                        foreach (string line in File.ReadAllLines(competitionFilePath))
                         {
                             string[] parts = line.Split('\t');
                             compNumberList.Add(parts.Length > 0 ? parts[0].Trim() : "");
                             compOrderList.Add(parts.Length > 1 ? parts[1].Trim() : "");
                             compExtraList.Add(parts.Length > 2 ? parts[2].Trim() : "");
-                                
+
                         }
-                    break;
-                }
-                        
-                catch (System.IO.IOException)
-                {
+                        break;
+                    }
+
+                    catch (System.IO.IOException)
+                    {
                         OpenFileException ofe = new OpenFileException();
                         ofe.err(Path.GetFileName(docName), "EXCEL");
+                    }
                 }
             }
-        }
 
             else
             {
@@ -480,7 +480,7 @@ namespace BibleCompiler2
 
             // --- Populate Main Match Questions ---
             // Usage
-            var questions = matchList(); // Populates quarList and mList (Crucial this works somewhat)
+            var questions = matchList(); // Populates quarList and mList
             List<List<Questions>> selectedQs = questions.Item1;
             List<List<Questions>> extraQs = questions.Item2;
             // --- Prepare Output Document ---
@@ -512,9 +512,6 @@ namespace BibleCompiler2
                     // Add Match Header
                     insertMatchHeader(compDocument, i);
                     // Add Match Header
-
-
-                    int questionsAddedThisLoop = 0; // Track questions conceptually added by the flawed inner loop
                     List<Questions> mainQuestionsThisMatch = new List<Questions>(); // Store questions added by inner loop
 
                     // Writes the standard questions
@@ -581,7 +578,7 @@ namespace BibleCompiler2
 
                 // --- Save Document ---
                 try { compDocument.Save(); }
-                catch (System.IO.IOException ex)
+                catch (System.IO.IOException)
                 { /* ... error handling ... */
                     OpenFileException ofe = new OpenFileException();
                     ofe.err(Path.GetFileName(competitionDocName));
@@ -590,98 +587,7 @@ namespace BibleCompiler2
             } // End using compDocument
         } // End createComp
 
-        // Selects 7 extra questions (3G, F, M, R, Q) in a specific order if available and unused.
-        private List<Questions> selectOrderedExtraQuestions(List<Questions> allCompetitionQuestions, HashSet<Questions> currentlyUsedSet)
-        {
-            // List to hold the final ordered extra questions for this match.
-            List<Questions> orderedExtras = new List<Questions>();
-            // Random number generator for selecting among available candidates of a type.
-            var random = new Random();
-            // Define the required sequence of question types.
-            var requiredTypes = new List<string> { "G", "G", "G", "F", "R", "M", "Q" };
 
-            // Filter out used questions and group remaining questions by type.
-            // Store them in lists within a dictionary. Shuffle the list for each type initially.
-            // Requires Questions class to have Equals/GetHashCode implemented correctly!
-            var availableByType = allCompetitionQuestions
-                .Where(q => !currentlyUsedSet.Contains(q))
-                .GroupBy(q => q.type)
-                .ToDictionary(g => g.Key, g => g.OrderBy(q => random.Next()).ToList());
-
-            // Attempt to select one question for each required type in the specified order.
-            foreach (string typeNeeded in requiredTypes)
-            {
-                // Check if the required type exists in our available pool AND has questions left in its list.
-                if (availableByType.TryGetValue(typeNeeded, out var candidates) && candidates.Count > 0)
-                {
-                    // Take the first available question from the (already shuffled) list for this type.
-                    Questions selectedQ = candidates[0];
-                    // Add it to the results list for this match's extras.
-                    orderedExtras.Add(selectedQ);
-                    // IMPORTANT: Remove the selected question from the candidates list
-                    // to prevent it being selected again immediately (e.g., for the next 'G').
-                    candidates.RemoveAt(0);
-                }
-                else
-                {
-                    Console.WriteLine($"Warning: Could not find an unused question of type '{typeNeeded}' for extras.");
-                }
-            }
-
-            // Return the list of selected extra questions in the order they were found.
-            return orderedExtras;
-        }
-        private void createCompetitionTable(DocX docName)
-        {
-            int numRows = 3;
-            int numCol = 2;
-            int colOne = 60;
-            int colTwo = 490;
-            int colThree = 550 - (colOne + colTwo);
-            Table compTable = docName.AddTable(numRows, numCol);
-            compTable.SetColumnWidth(0, colOne);
-            compTable.SetColumnWidth(1, colTwo);
-            for (int i = 0; i < quarList.Count; i++)
-            {
-                if (quarList[i].type == "Q")
-                {
-                    compTable.Rows[0].MergeCells(0, 2);
-                    compTable.Rows[0].Cells[0].Paragraphs[0].Append("Q #" + i.ToString() + " " + "This is a Quote Question. Question!");
-                    docName.InsertTable(compTable);
-                }
-                else if (quarList[i].type == "G")
-                {
-                    compTable.Rows[0].MergeCells(0, 2);
-                    compTable.Rows[0].Cells[0].Paragraphs[0].Append("Q #" + i.ToString() + " " + "This is a General Question. Question!");
-                    docName.InsertTable(compTable);
-                }
-                else if (quarList[i].type == "F")
-                {
-                    compTable.Rows[0].MergeCells(0, 2);
-                    compTable.Rows[0].Cells[0].Paragraphs[0].Append("Q #" + i.ToString() + " " + "This is a Finish This Verse Question. Question!");
-                    docName.InsertTable(compTable);
-                }
-                else if (quarList[i].type == "F2")
-                {
-                    compTable.Rows[0].MergeCells(0, 2);
-                    compTable.Rows[0].Cells[0].Paragraphs[0].Append("Q #" + i.ToString() + " " + "This is a These 2 Verses  Question. Question! Finish These 2 Verses...");
-                    docName.InsertTable(compTable);
-                }
-                else if (quarList[i].type == "M")
-                {
-                    compTable.Rows[0].MergeCells(0, 2);
-                    compTable.Rows[0].Cells[0].Paragraphs[0].Append("Q #" + i.ToString() + " " + "This is a Multiple Answer Question. Question!");
-                    docName.InsertTable(compTable);
-                }
-                else if (quarList[i].type == "R")
-                {
-                    compTable.Rows[0].MergeCells(0, 2);
-                    compTable.Rows[0].Cells[0].Paragraphs[0].Append("Q #" + i.ToString() + " " + "This is a Reference Question. Question!");
-                    docName.InsertTable(compTable);
-                }
-            }
-
-        }
         private void createStudyGuide()
         {
             compNumber = "0";  // Reset the global competition number so sections order correctly.
@@ -838,7 +744,6 @@ namespace BibleCompiler2
                     {
                         fv = Q[7];
                     }
-                    int num = 0;
                     Questions q = new Questions(Q[0], Q[1], Q[2], Q[3], Q[4], Q[5], Q[6], Q[7], Q[8]);
                     // This if statement makes it so that the questions are added to the list depending on which button is selected
                     questions.Add(q);
@@ -849,7 +754,7 @@ namespace BibleCompiler2
                     }
 
                 }
-                catch (IndexOutOfRangeException e)
+                catch (IndexOutOfRangeException)
                 {
                     Close();
                 }
@@ -1014,11 +919,7 @@ namespace BibleCompiler2
                 tkj = "KBC";
                 btnSubmit.Enabled = true;
             }
-            //else if (rdbC1.Checked || rdbC2.Checked || rdbC3.Checked || rdbC4.Checked || rdbC5.Checked || rdbC6.Checked ||
-            //         rdb10.Checked || rdb25.Checked)
-            //{
             btnSubmit.Enabled = true;
-            //}
             fillQuestionsActiveList();
         }
 
@@ -1793,7 +1694,6 @@ namespace BibleCompiler2
                 OpenFileException ofe = new OpenFileException();
                 ofe.err(Path.GetFileName(docName));
             }
-            // Consider Dispose if not using 'using'
         }
 
         private void createFirst3()
@@ -1921,22 +1821,6 @@ namespace BibleCompiler2
         }
 
 
-        //private string abbreviateBookName(string bookName)
-        //{
-        //    Dictionary<string, string> abbreviations = new Dictionary<string, string>
-        //    {
-        //        { "Romans", "Rom" },
-        //        { "I Timothy", "I Tim" },
-        //    };
-
-        //    if (abbreviations.ContainsKey(bookName))
-        //    {
-        //        return abbreviations[bookName];
-        //    }
-        //    return bookName;
-        //}
-
-
         //<Functions for the Menu Strip>
         public void fileOpen(string textFileName)
         {
@@ -2026,7 +1910,7 @@ namespace BibleCompiler2
         {
             fileOpen(@"Kids\Guides (25, 20)\kbcCompetitionGuide25");
         }
-        // -------- NEW generic handler for C1‑C6 --------------
+        // --------  handler for C1‑C6 --------------
         // 1) re‑enables Submit if paths are chosen,
         // 2) refreshes the ListBox with the filtered counts.
         private void rdbCompNumber_CheckedChanged(object sender, EventArgs e)
@@ -2163,9 +2047,6 @@ namespace BibleCompiler2
         {
             btnSubmit.Enabled = !string.IsNullOrEmpty(inputPath) && !string.IsNullOrEmpty(outputPath);
         }
-
-
-
         //</Functions for the Buttons>
         //</Functions for the Menu Strip>
     }
