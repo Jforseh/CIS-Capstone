@@ -449,39 +449,8 @@ namespace BibleCompiler2
             List<string> compExtraList = new List<string>();
             if (File.Exists(competitionFilePath))
             {
-                bool fileClosed = false;
                 while(true)
                 {
-            //    try
-            //    {
-            //        foreach (string line in File.ReadAllLines(competitionFilePath))
-            //        {
-            //            string[] parts = line.Split('\t');
-            //            compNumberList.Add(parts.Length > 0 ? parts[0].Trim() : "");
-            //            compOrderList.Add(parts.Length > 1 ? parts[1].Trim() : "");
-            //            compExtraList.Add(parts.Length > 2 ? parts[2].Trim() : "");
-            //        }
-            //        fileClosed = true; // If successful, exit the loop
-            //    }
-            //    catch (System.IO.IOException ex)
-            //    {
-            //        MessageBox.Show($"The file \"{Path.GetFileName(competitionFilePath)}\" is currently open in another program.\nPlease close the file and try again.", 
-            //                        "File Access Error", 
-            //                        MessageBoxButtons.OK, 
-            //                        MessageBoxIcon.Hand);
-            //        // Optionally, attempt to close the process if it's a known application like Notepad or Word
-            //        string processName = "notepad"; // Replace with "winWord" if it's a Word document
-            //        Process[] processList = Process.GetProcesses();
-            //        foreach (Process theProcess in processList)
-            //        {
-            //            if (theProcess.ProcessName.IndexOf(processName, StringComparison.OrdinalIgnoreCase) >= 0)
-            //            {
-            //                theProcess.Kill(); // Forcefully close the process
-            //            }
-            //        }
-            //    }
-            //}
-            //{
                 try
                 {
                     foreach (string line in File.ReadAllLines(competitionFilePath))
@@ -495,7 +464,7 @@ namespace BibleCompiler2
                     break;
                 }
                         
-                catch (System.IO.IOException ex)
+                catch (System.IO.IOException)
                 {
                         OpenFileException ofe = new OpenFileException();
                         ofe.err(Path.GetFileName(docName), "EXCEL");
