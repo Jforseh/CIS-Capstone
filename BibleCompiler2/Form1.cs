@@ -54,7 +54,8 @@ namespace BibleCompiler2
         //List<string> compSeed = new List<string>();
         string filePrefix = "";
         private HashSet<string> printedCompetitions = new HashSet<string>();
-        // TODO: 
+        // TODO:
+        // Remove all Console.WriteLine
         //SET DEBUG TO FALSE BEFORE FINAL SUBMISSION 
         bool debug = true;
 
@@ -1160,13 +1161,12 @@ namespace BibleCompiler2
         private string frmt(string s1, string s2)
         {
             return string.Format("  {0, -8}|{1, 5}  ", s1, s2);
-        }
+        }       
         private void createSeed()
         {
             compSeed.Clear();
             this.Text = quarList.Count.ToString();
             //lsbTest.Items.Clear();
-            //ToDo: Undo this
             var seed = new Random(0);
             for (int i = 0; i < verseCount.Count; i++)
             {
@@ -1208,12 +1208,12 @@ namespace BibleCompiler2
             // Create a list of questions for the selected competition
             Dictionary<string, List<Questions>> compQuestions = new Dictionary<string, List<Questions>>();
             List<Questions> matchQuestions = new List<Questions>();
+            HashSet<Questions> matchQuestionsSet = new HashSet<Questions>();
             List<Questions> allUsedQuestions = new List<Questions>();
             foreach (string questionType in compOrderList)
             {
                 compQuestions[questionType] = new List<Questions>();
             }
-            //List<Questions> compQuestions = new List<Questions>();
             if (rdbTbccompetition.Checked) // Teens
             {
                 for (int i=0; i < questionsActiveList.Count; i++)
@@ -1244,7 +1244,8 @@ namespace BibleCompiler2
             }
 
             // Setup ran
-            var random = new Random(0); // ToDo: Remove the 0
+            //ToDo: Remove 0
+            var random = new Random(0);
 
             // For each match
             int restartsCounter = 0;
@@ -1280,21 +1281,35 @@ namespace BibleCompiler2
                     compQuestions[questionType] = compQuestions[questionType].OrderBy(q => random.Next()).ToList();
                     foreach (Questions question in compQuestions[questionType])
                     {
-                        // Check if the question is already used in the match
-                        if (matchQuestions.Contains(question))
+                        // CmatchQuestionsSetestion is already used in the match
+                        if (matchQuestionsSet.Contains(question))
                         {
                             continue; // Skip to next question
                         }
                         potentialQuestions.Add(question);
                     }
+                    // In the case of all questions of a type used up
+                    // Remove all questions of the type to start again
                     if (potentialQuestions.Count == 0)
                     {
+                        List<Questions> toRemove = new List<Questions>();
+                        foreach (Questions question in matchQuestionsSet)
+                        {
+                            if (question.type == questionType)
+                            {
+                                toRemove.Add(question);
+                            }
+                        }
+                        foreach (Questions question in toRemove)
+                        {
+                            matchQuestionsSet.Remove(question);
+                        }
                         potentialQuestions = compQuestions[questionType];
                     }
 
 
                     // PRIORITY 2
-                    // Check if the question's BCV is already used in the last 4 questions
+                    // Check if the question's BCV is already used in the last 3 questions
                     bool bcvUsed = false;
                     foreach (Questions question in potentialQuestions)
                     {
@@ -1315,15 +1330,16 @@ namespace BibleCompiler2
                             nextPotentialQuestions.Add(question);
                         }
                     }
-                    if (nextPotentialQuestions.Count ==0)
+                    if (nextPotentialQuestions.Count == 0)
                     {
-                        if (restartsCounter < 10)
+                        if (restartsCounter < 100)
                         {
                             matchQuestions.Clear();
+                            matchQuestionsSet.Clear();
                             restartsCounter++;
                             matchNum--;
                             restartingFlag = true;
-                            lsbTest.Items.Add("RESTARTING MATCH " + matchNum.ToString() + " - " + questionNum.ToString());
+                            lsbTest.Items.Add(restartsCounter.ToString() + " RESTARTING MATCH " + matchNum.ToString() + " - " + questionNum.ToString());
                             break;
                         }
                     }
@@ -1337,7 +1353,8 @@ namespace BibleCompiler2
                         lsbTest.Items.Add("BREAKING WITHIN 3 RULE");
                     }
 
-                    // PRIORITY 3
+                    //PRIORITY 3
+                    //Question has not been used in the competition
                     foreach (Questions question in potentialQuestions)
                     {
                         if (allUsedQuestions.Contains(question))
@@ -1354,10 +1371,11 @@ namespace BibleCompiler2
                     }
                     else
                     {
-                        lsbTest.Items.Add(questionNum.ToString() + "BREAKING USED IN COMPETITION RULE");
+                        //lsbTest.Items.Add(questionNum.ToString() + "BREAKING USED IN COMPETITION RULE");
                     }
 
                     // PRIORITY 4
+                    // BCV has not been used in the match
                     bool addQuestion = true;
                     foreach (Questions question in potentialQuestions)
                     {
@@ -1373,9 +1391,11 @@ namespace BibleCompiler2
                                 break;
                             }
                         }
+
                         //Add the first question that meets the critera
                         if (addQuestion)
                         {
+                            matchQuestionsSet.Add(question);  
                             matchQuestions.Add(question);
                             //lsbTest.Items.Add(questionNum.ToString() + " " + question.ToString());
                             if (question.type == "F2")
@@ -1384,17 +1404,19 @@ namespace BibleCompiler2
                             }
                             break;
                         }
+
                     }
+                                       
                     if (!addQuestion)
                     {
+                        matchQuestionsSet.Add(potentialQuestions[0]);     
                         matchQuestions.Add(potentialQuestions[0]);
                         //lsbTest.Items.Add(questionNum.ToString() + " " + potentialQuestions[0].ToString());
                         if (potentialQuestions[0].type == "F2")
                         {
                             f2sUsed++;
                         }
-                    }
-                    
+                    }                    
                 }
                 if (!restartingFlag)
                 {
@@ -1404,7 +1426,7 @@ namespace BibleCompiler2
                         lsbTest.Items.Add(indexer.ToString()  + " " + question.ToString());
                         allUsedQuestions.Add(question);
                     }
-                    selectedQs.Add(matchQuestions);
+                    selectedQs.Add(new List<Questions>(matchQuestions));
                     lsbTest.Items.Add("-------------");
                     restartsCounter = 0;
 
@@ -1470,7 +1492,8 @@ namespace BibleCompiler2
             }
             return (selectedQs, extraQs);
         }
-                private void insertDocumentTitleHeader(DocX compDocument, int matchNumber)
+        
+        private void insertDocumentTitleHeader(DocX compDocument, int matchNumber)
         {
             string titleText = $"{tkj} {questionsActiveList[6].book}: Competition {getCompetitionNumberName()} - Match {matchNumber}";
             Table titleTable = compDocument.AddTable(1, 3);
