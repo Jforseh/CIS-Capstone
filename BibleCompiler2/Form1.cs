@@ -449,70 +449,60 @@ namespace BibleCompiler2
             List<string> compExtraList = new List<string>();
             if (File.Exists(competitionFilePath))
             {
-            bool fileClosed = false;
-            while (!fileClosed)
-            {
-                // Attempt to read the file and populate the lists
+                bool fileClosed = false;
+                while(true)
+                {
+            //    try
+            //    {
+            //        foreach (string line in File.ReadAllLines(competitionFilePath))
+            //        {
+            //            string[] parts = line.Split('\t');
+            //            compNumberList.Add(parts.Length > 0 ? parts[0].Trim() : "");
+            //            compOrderList.Add(parts.Length > 1 ? parts[1].Trim() : "");
+            //            compExtraList.Add(parts.Length > 2 ? parts[2].Trim() : "");
+            //        }
+            //        fileClosed = true; // If successful, exit the loop
+            //    }
+            //    catch (System.IO.IOException ex)
+            //    {
+            //        MessageBox.Show($"The file \"{Path.GetFileName(competitionFilePath)}\" is currently open in another program.\nPlease close the file and try again.", 
+            //                        "File Access Error", 
+            //                        MessageBoxButtons.OK, 
+            //                        MessageBoxIcon.Hand);
+            //        // Optionally, attempt to close the process if it's a known application like Notepad or Word
+            //        string processName = "notepad"; // Replace with "winWord" if it's a Word document
+            //        Process[] processList = Process.GetProcesses();
+            //        foreach (Process theProcess in processList)
+            //        {
+            //            if (theProcess.ProcessName.IndexOf(processName, StringComparison.OrdinalIgnoreCase) >= 0)
+            //            {
+            //                theProcess.Kill(); // Forcefully close the process
+            //            }
+            //        }
+            //    }
+            //}
+            //{
                 try
                 {
                     foreach (string line in File.ReadAllLines(competitionFilePath))
-                    {
-                        string[] parts = line.Split('\t');
-                        compNumberList.Add(parts.Length > 0 ? parts[0].Trim() : "");
-                        compOrderList.Add(parts.Length > 1 ? parts[1].Trim() : "");
-                        compExtraList.Add(parts.Length > 2 ? parts[2].Trim() : "");
-                    }
-                    fileClosed = true; // If successful, exit the loop
+                        {
+                            string[] parts = line.Split('\t');
+                            compNumberList.Add(parts.Length > 0 ? parts[0].Trim() : "");
+                            compOrderList.Add(parts.Length > 1 ? parts[1].Trim() : "");
+                            compExtraList.Add(parts.Length > 2 ? parts[2].Trim() : "");
+                                
+                        }
+                    break;
                 }
+                        
                 catch (System.IO.IOException ex)
                 {
-                    MessageBox.Show($"The file \"{Path.GetFileName(competitionFilePath)}\" is currently open in another program.\nPlease close the file and try again.", 
-                                    "File Access Error", 
-                                    MessageBoxButtons.OK, 
-                                    MessageBoxIcon.Hand);
-                    // Optionally, attempt to close the process if it's a known application like Notepad or Word
-                    string processName = "notepad"; // Replace with "winWord" if it's a Word document
-                    Process[] processList = Process.GetProcesses();
-                    foreach (Process theProcess in processList)
-                    {
-                        if (theProcess.ProcessName.IndexOf(processName, StringComparison.OrdinalIgnoreCase) >= 0)
-                        {
-                            theProcess.Kill(); // Forcefully close the process
-                        }
-                    }
+                        OpenFileException ofe = new OpenFileException();
+                        ofe.err(Path.GetFileName(docName), "EXCEL");
                 }
             }
-            {
-                try
-                {
-                foreach (string line in File.ReadAllLines(competitionFilePath))
-                    {
-                        string[] parts = line.Split('\t');
-                        compNumberList.Add(parts.Length > 0 ? parts[0].Trim() : "");
-                        compOrderList.Add(parts.Length > 1 ? parts[1].Trim() : "");
-                        compExtraList.Add(parts.Length > 2 ? parts[2].Trim() : "");
-                    }
-                }
-                catch (System.IO.IOException ex)
-                {
-                    MessageBox.Show($"The file \"{Path.GetFileName(competitionFilePath)}\" is currently open in another program.\nPlease close the file and try again.", 
-                                    "File Access Error", 
-                                    MessageBoxButtons.OK, 
-                                    MessageBoxIcon.Hand);
+        }
 
-                    // Optionally, attempt to close the process if it's a known application like Notepad or Word
-                    string processName = "notepad"; // Replace with "winWord" if it's a Word document
-                    Process[] processList = Process.GetProcesses();
-                    foreach (Process theProcess in processList)
-                    {
-                        if (theProcess.ProcessName.IndexOf(processName, StringComparison.OrdinalIgnoreCase) >= 0)
-                        {
-                            theProcess.Kill(); // Forcefully close the process
-                        }
-                    }
-                }
-            }
-            }
             else
             {
                 MessageBox.Show($"Error: Competition guide file not found at {competitionFilePath}", "File Not Found", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -1122,7 +1112,8 @@ namespace BibleCompiler2
             bool isCompetitionSizeSelected = rdb25.Checked || rdb20.Checked;
 
             // Enable the Submit button only if both input and output paths are set and a competition size is selected
-            btnSubmit.Enabled = btnInputClicked && btnOutputClicked && isCompetitionSizeSelected;
+            //ToDo: Uncomment this line and test to make sure rdbKBC 25 and 20 work
+            //btnSubmit.Enabled = btnInputClicked && btnOutputClicked && isCompetitionSizeSelected;
         }
 
         private void rdbTbcFirst3_CheckedChanged(object sender, EventArgs e)
