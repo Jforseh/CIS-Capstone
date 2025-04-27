@@ -1027,7 +1027,6 @@ namespace BibleCompiler2
             else if (pnlComp.Visible)
             {
                 createComp();
-                //createCompetition();
 
                 System.Diagnostics.Process.Start(competitionDocName);
             }
@@ -1104,6 +1103,7 @@ namespace BibleCompiler2
             radioBtn();                                      // set tkj = "TBC" & rebuild list
             countTypes();                                    // refresh counts
             maxrdbCount(maxTComp);                           // toggle C# radios
+
         }
         private void rdbKbccompetition_CheckedChanged(object sender, EventArgs e)
         {
@@ -1114,6 +1114,15 @@ namespace BibleCompiler2
             radioBtn();                                      // set tkj = "KBC" & rebuild list
             countTypes();                                    // refresh counts
             maxrdbCount(maxKComp);
+            checkKBCButtonState();
+        }
+        private void checkKBCButtonState()
+        {
+            // Check if one of the competition size radio buttons is selected
+            bool isCompetitionSizeSelected = rdb25.Checked || rdb20.Checked;
+
+            // Enable the Submit button only if both input and output paths are set and a competition size is selected
+            btnSubmit.Enabled = btnInputClicked && btnOutputClicked && isCompetitionSizeSelected;
         }
 
         private void rdbTbcFirst3_CheckedChanged(object sender, EventArgs e)
