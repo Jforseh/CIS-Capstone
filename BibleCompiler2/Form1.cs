@@ -1666,19 +1666,19 @@ namespace BibleCompiler2
                 string fill1 = maskQuote(q.question, 1);
                 quoteDoc.InsertParagraph(fill1)
                     .Font(font).FontSize(18).LineSpacing = 14f;
-                quoteDoc.InsertParagraph().Append("").Font(font).FontSize(18).LineSpacing = 14f;
+                quoteDoc.InsertParagraph().Append("").Font(font).FontSize(18).KeepLinesTogether().LineSpacing = 14f;
 
                 // Difficulty 2 (No changes here)
                 string fill2 = maskQuote(q.question, 2);
                 quoteDoc.InsertParagraph(fill2)
                     .Font(font).FontSize(18).LineSpacing = 14f;
-                quoteDoc.InsertParagraph().Append("").Font(font).FontSize(18).LineSpacing = 14f;
+                quoteDoc.InsertParagraph().Append("").Font(font).FontSize(18).KeepLinesTogether().LineSpacing = 14f;
 
                 // Difficulty 3
                 string fill3 = maskQuote(q.question, 3);
                 // *** CHANGE 3: Store reference to the paragraph containing fill3 ***
                 lastParagraphOfPreviousQuote = quoteDoc.InsertParagraph(fill3); // Store this paragraph
-                lastParagraphOfPreviousQuote.Font(font).FontSize(18).LineSpacing = 14f; // Apply formatting to the stored paragraph
+                lastParagraphOfPreviousQuote.Font(font).FontSize(18).KeepLinesTogether().LineSpacing = 14f; // Apply formatting to the stored paragraph
 
                 // Extra space after fill3 is already removed from previous step.
             }
