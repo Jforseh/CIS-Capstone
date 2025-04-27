@@ -530,18 +530,37 @@ namespace BibleCompiler2
 
 
                     // --- EXTRAS LOGIC (Call helper with updated used set) ---
+                    
 
+                    // Insert the main "Extra Questions" header
+                    insertExtraQuestionsHeader(compDocument);
 
-                    // Insert header and questions
-                    insertExtraSubsectionHeader(compDocument, "Extra Questions"); // Place header correctly
+                    // Track if a header has already been added for general questions
+                    bool generalHeaderAdded = false;
+
                     for (int j = 0; j < extraQs[i - 1].Count; j++)
                     {
-                        // Use the CORRECT insert function for extras
+                        // Get the full type name from the dictionary
+                        string questionType = extraQs[i - 1][j].type;
+                        string fullTypeName = qTypeDict.ContainsKey(questionType) ? qTypeDict[questionType] : questionType;
+
+                        // Add a subsection header for non-general questions or the first general question
+                        if (questionType == "G")
+                        {
+                            if (!generalHeaderAdded)
+                            {
+                                insertExtraSubsectionHeader(compDocument, $" {fullTypeName}");
+                                generalHeaderAdded = true;
+                            }
+                        }
+                        else
+                        {
+                            insertExtraSubsectionHeader(compDocument, $"{fullTypeName}");
+                        }
+
+                        // Insert the question table
                         insertQuestionFormattedTable(compDocument, extraQs[i - 1][j], "__");
-                    }
-
-
-
+                    }               
 
                     // --- PAGE BREAK LOGIC---
                     // Add page break after match 'i' and its extras, unless it's the last one (i=4)
@@ -1523,6 +1542,7 @@ namespace BibleCompiler2
 
             Table table = compDocument.AddTable(3, 2);
             table.SetWidths(new float[] { 50, 500 });
+            // Define borders
             Border b = new Border(Xceed.Document.NET.BorderStyle.Tcbs_thick, BorderSize.seven, 0, Xceed.Drawing.Color.Black);
             Border a = new Border(Xceed.Document.NET.BorderStyle.Tcbs_thick, BorderSize.four, 0, Xceed.Drawing.Color.Black);
 
@@ -1534,10 +1554,10 @@ namespace BibleCompiler2
                     for (int c = 0; c < 2; c++)
                     {
                         table.Rows[r].Cells[c].FillColor = Xceed.Drawing.Color.White;
-                        table.Rows[r].Cells[c].SetBorder(TableCellBorderType.Top, b);
-                        table.Rows[r].Cells[c].SetBorder(TableCellBorderType.Bottom, b);
-                        table.Rows[r].Cells[c].SetBorder(TableCellBorderType.Left, b);
-                        table.Rows[r].Cells[c].SetBorder(TableCellBorderType.Right, b);
+                        table.Rows[r].Cells[c].SetBorder(TableCellBorderType.Top, a);
+                        table.Rows[r].Cells[c].SetBorder(TableCellBorderType.Bottom, a);
+                        table.Rows[r].Cells[c].SetBorder(TableCellBorderType.Left, a);
+                        table.Rows[r].Cells[c].SetBorder(TableCellBorderType.Right, a);
                     }
                 }
             }
@@ -1651,15 +1671,15 @@ namespace BibleCompiler2
             extraHeaderTable.Rows[0].Cells[0].SetBorder(TableCellBorderType.Bottom, b);
             extraHeaderTable.Rows[0].Cells[0].SetBorder(TableCellBorderType.Left, b);
             extraHeaderTable.Rows[0].Cells[0].SetBorder(TableCellBorderType.Right, b);
-            Paragraph header = extraHeaderTable.Rows[0].Cells[0].Paragraphs[0];
-            header.Append("EXTRA QUESTIONS").Font(font).FontSize(12).Bold();
+            Paragraph   header = extraHeaderTable.Rows[0].Cells[0].Paragraphs[0];
+            header.Append("Extra Questions").Font(font).FontSize(12).Bold();
             header.Alignment = Alignment.center;
             compDocument.InsertTable(extraHeaderTable);
+            // Add spacing after the table
+            Paragraph spacingParagraph = compDocument.InsertParagraph();
+            spacingParagraph.Append("").Font(font).FontSize(1); // Empty paragraph
+            spacingParagraph.SpacingAfter(3); // Adjust spacing as needed (12 points = 1.0 spacing)
         }
-
-
-
-
 
         private void lblInputfilepath_TextChanged(object sender, EventArgs e)
         {
