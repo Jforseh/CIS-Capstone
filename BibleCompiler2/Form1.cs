@@ -496,16 +496,10 @@ namespace BibleCompiler2
                 for (int i = 1; i < 5; i++) // Hardcoded 4 iterations, 'i' is Match Number 1-4
                 {
                     // Add Match Header
-                    Table compHeader = compDocument.AddTable(1, 1);
-                    compHeader.SetColumnWidth(0, 550); // Adjusted width
-                    compDocument.InsertParagraph().Append("").Font(font).FontSize(spaceFontSize);
-                    studyGuideTableBorderSetupType(compHeader, 0);
-                    // Use getCompetitionNumberName() for C# and i for Match #
-                    compHeader.Rows[0].Cells[0].Paragraphs[0].Append($"{tkj} {filePrefix}: Competition {getCompetitionNumberName()} - Match {i}")
-                        .Font(font).FontSize((int)(fontSize * 1.5)).Bold().Alignment = Alignment.center;
-                    compDocument.InsertTable(compHeader);
+                    insertMatchHeader(compDocument, i);
+                    // Add Match Header
 
-                    // Inner Loop - Problematic, but we work around it for uniqueness tracking
+
                     int questionsAddedThisLoop = 0; // Track questions conceptually added by the flawed inner loop
                     List<Questions> mainQuestionsThisMatch = new List<Questions>(); // Store questions added by inner loop
 
@@ -1512,22 +1506,32 @@ namespace BibleCompiler2
             return (selectedQs, extraQs);
         }
         
-        private void insertDocumentTitleHeader(DocX compDocument, int matchNumber)
+        private void insertMatchHeader(DocX compDocument, int matchNumber)
         {
-            string titleText = $"{tkj} {questionsActiveList[6].book}: Competition {getCompetitionNumberName()} - Match {matchNumber}";
-            Table titleTable = compDocument.AddTable(1, 3);
-            titleTable.SetWidths(new float[] { 10, 10, 580 });
-            studyGuideTableBorderSetup(titleTable, 0);
-            titleTable.Rows[0].MergeCells(0, 2);
-            titleTable.Rows[0].Cells[0].Paragraphs[0]
+            
+            int colWidth = 550; 
+            string titleText = $"{tkj} {filePrefix}: Competition {getCompetitionNumberName()} - Match {matchNumber}";
+
+            // Create the table with one row and one column
+            Table titleTable = compDocument.AddTable(1, 1);
+            titleTable.SetColumnWidth(0, colWidth); // Set the column width
+            studyGuideTableBorderSetupType(titleTable, 0); // Apply consistent border setup
+            titleTable.Rows[0].Cells[0].FillColor = Xceed.Drawing.Color.LightGray;
+
+            // Add the title text to the table
+            titleTable.Rows[0].Cells[0].Paragraphs[0]               
                 .Append(titleText)
                 .Font(font)
-                .FontSize(fontSize * 2)
+                .FontSize(16)
                 .Bold()
                 .Alignment = Alignment.center;
+
+            // Insert the table into the document
             compDocument.InsertTable(titleTable);
-            compDocument.InsertParagraph().Append("").Font(font).FontSize(spaceFontSize);
+
+            compDocument.InsertParagraph().Append("").Font(font).FontSize(fontSize);
         }
+
         private void insertQuestionFormattedTable(DocX compDocument, Questions q, string questionNumber)
         {
             string headerText = "";
