@@ -449,13 +449,69 @@ namespace BibleCompiler2
             List<string> compExtraList = new List<string>();
             if (File.Exists(competitionFilePath))
             {
-                foreach (string line in File.ReadAllLines(competitionFilePath))
+            bool fileClosed = false;
+            while (!fileClosed)
+            {
+                // Attempt to read the file and populate the lists
+                try
                 {
-                    string[] parts = line.Split('\t');
-                    compNumberList.Add(parts.Length > 0 ? parts[0].Trim() : "");
-                    compOrderList.Add(parts.Length > 1 ? parts[1].Trim() : "");
-                    compExtraList.Add(parts.Length > 2 ? parts[2].Trim() : "");
+                    foreach (string line in File.ReadAllLines(competitionFilePath))
+                    {
+                        string[] parts = line.Split('\t');
+                        compNumberList.Add(parts.Length > 0 ? parts[0].Trim() : "");
+                        compOrderList.Add(parts.Length > 1 ? parts[1].Trim() : "");
+                        compExtraList.Add(parts.Length > 2 ? parts[2].Trim() : "");
+                    }
+                    fileClosed = true; // If successful, exit the loop
                 }
+                catch (System.IO.IOException ex)
+                {
+                    MessageBox.Show($"The file \"{Path.GetFileName(competitionFilePath)}\" is currently open in another program.\nPlease close the file and try again.", 
+                                    "File Access Error", 
+                                    MessageBoxButtons.OK, 
+                                    MessageBoxIcon.Hand);
+                    // Optionally, attempt to close the process if it's a known application like Notepad or Word
+                    string processName = "notepad"; // Replace with "winWord" if it's a Word document
+                    Process[] processList = Process.GetProcesses();
+                    foreach (Process theProcess in processList)
+                    {
+                        if (theProcess.ProcessName.IndexOf(processName, StringComparison.OrdinalIgnoreCase) >= 0)
+                        {
+                            theProcess.Kill(); // Forcefully close the process
+                        }
+                    }
+                }
+            }
+            {
+                try
+                {
+                foreach (string line in File.ReadAllLines(competitionFilePath))
+                    {
+                        string[] parts = line.Split('\t');
+                        compNumberList.Add(parts.Length > 0 ? parts[0].Trim() : "");
+                        compOrderList.Add(parts.Length > 1 ? parts[1].Trim() : "");
+                        compExtraList.Add(parts.Length > 2 ? parts[2].Trim() : "");
+                    }
+                }
+                catch (System.IO.IOException ex)
+                {
+                    MessageBox.Show($"The file \"{Path.GetFileName(competitionFilePath)}\" is currently open in another program.\nPlease close the file and try again.", 
+                                    "File Access Error", 
+                                    MessageBoxButtons.OK, 
+                                    MessageBoxIcon.Hand);
+
+                    // Optionally, attempt to close the process if it's a known application like Notepad or Word
+                    string processName = "notepad"; // Replace with "winWord" if it's a Word document
+                    Process[] processList = Process.GetProcesses();
+                    foreach (Process theProcess in processList)
+                    {
+                        if (theProcess.ProcessName.IndexOf(processName, StringComparison.OrdinalIgnoreCase) >= 0)
+                        {
+                            theProcess.Kill(); // Forcefully close the process
+                        }
+                    }
+                }
+            }
             }
             else
             {
@@ -490,7 +546,6 @@ namespace BibleCompiler2
                 // --- Setup variables needed in the loop ---
                 int num = 0; // This will hold the competition size (e.g., 25)
                 int.TryParse(getCompetitionOrderName(), out num);
-                // compNumber seems unused or misused in the original loop's header? Using getCompetitionNumberName() instead.
 
                 // --- Main Loop (Using User's Structure with Minimal Fixes) ---
                 for (int i = 1; i < 5; i++) // Hardcoded 4 iterations, 'i' is Match Number 1-4
@@ -1509,7 +1564,7 @@ namespace BibleCompiler2
         private void insertMatchHeader(DocX compDocument, int matchNumber)
         {
             
-            int colWidth = 550; 
+            int colWidth = 540; 
             string titleText = $"{tkj} {filePrefix}: Competition {getCompetitionNumberName()} - Match {matchNumber}";
 
             // Create the table with one row and one column
