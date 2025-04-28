@@ -576,12 +576,31 @@ namespace BibleCompiler2
 
                 } // End outer loop 'i'
 
-                // --- Save Document ---
-                try { compDocument.Save(); }
+                try
+                {
+                    compDocument.Save();
+                }
                 catch (System.IO.IOException)
-                { /* ... error handling ... */
+                {
+                    // Notify the user to close the document
                     OpenFileException ofe = new OpenFileException();
                     ofe.err(Path.GetFileName(competitionDocName));
+
+                    // Retry saving the document after the user closes it
+                    bool fileSaved = false;
+                    while (!fileSaved)
+                    {
+                        try
+                        {
+                            compDocument.Save();
+                            fileSaved = true; // Exit the loop if saving succeeds
+                        }
+                        catch (System.IO.IOException)
+                        {
+                            // Notify the user again if the file is still open
+                            ofe.err(Path.GetFileName(competitionDocName));
+                        }
+                    }
                 }
 
             } // End using compDocument
@@ -686,6 +705,11 @@ namespace BibleCompiler2
         }
         private void loadFile(string FILENAME)
         {
+                // Check if the file name is empty or null
+            if (string.IsNullOrEmpty(FILENAME))
+                {
+                    return; // Exit the method early if no valid file name is provided
+                }
             string vq = "";
             string fv = "";
             int rdbNum = 0;
@@ -754,10 +778,19 @@ namespace BibleCompiler2
                     }
 
                 }
-                catch (IndexOutOfRangeException)
-                {
-                    Close();
-                }
+                    catch (IndexOutOfRangeException ex)
+                    {
+                        // Clear the input list and reset the input path
+                        questions.Clear();
+                        inputPath = string.Empty;
+                        lblInputfilepath.Text = "";
+
+                        MessageBox.Show($"An error occurred while loading the file: {ex.Message}\nPlease check the file format and try again.", 
+                                        "File Load Error", 
+                                        MessageBoxButtons.OK, 
+                                        MessageBoxIcon.Error);
+                                        return;
+                    }
             }
 
             f2();
@@ -1182,8 +1215,8 @@ namespace BibleCompiler2
             }
 
             // Setup ran
-            //ToDo: Remove 0
-            var random = new Random(0);
+
+            var random = new Random();
 
             // For each match
             int restartsCounter = 0;
@@ -1653,8 +1686,6 @@ namespace BibleCompiler2
                 }
                 firstQuote = false; // Set flag for next iteration
 
-
-
                 // Build title (No changes here)
                 string competitionNumber = (tkj == "TBC") ? q.competitionTBC : q.competitionKBC;
                 string title = $"{tkj} Quote Fill-In – C{competitionNumber} {q.book} {q.chapter}:{q.verse}";
@@ -1679,10 +1710,8 @@ namespace BibleCompiler2
                 // *** CHANGE 3: Store reference to the paragraph containing fill3 ***
                 lastParagraphOfPreviousQuote = quoteDoc.InsertParagraph(fill3); // Store this paragraph
                 lastParagraphOfPreviousQuote.Font(font).FontSize(18).KeepLinesTogether().LineSpacing = 14f; // Apply formatting to the stored paragraph
-
                 // Extra space after fill3 is already removed from previous step.
             }
-
             // Save and open (No changes here)
             try
             {
