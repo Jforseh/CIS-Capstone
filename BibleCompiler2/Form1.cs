@@ -55,7 +55,6 @@ namespace BibleCompiler2
         string filePrefix = "";
         private HashSet<string> printedCompetitions = new HashSet<string>();
         // TODO:
-        // Remove all Console.WriteLine
         //SET DEBUG TO FALSE BEFORE FINAL SUBMISSION 
         bool debug = true;
 
@@ -1355,11 +1354,7 @@ private void createComp()
                         if (compQuestions["G"].Count - i <= 3-addedGs)
                         {
                             addedGs++;
-                            extraQs[matchNum].Add(compQuestions["G"][i]);
-                            if (matchQuestions.Contains(compQuestions["G"][i]))
-                            {
-                                Console.WriteLine("G Force Added for" + matchNum);
-                            }                            
+                            extraQs[matchNum].Add(compQuestions["G"][i]);                            
                             continue;
                         }
                         // If our G question was already used in the match, skip it
@@ -1380,10 +1375,6 @@ private void createComp()
                             if (compQuestions[T].Count - i <= 1)
                             {
                                 extraQs[matchNum].Add(compQuestions[T][i]);
-                                if (matchQuestions.Contains(compQuestions[T][i]))
-                                {
-                                    Console.WriteLine(T + " Force Added for " + matchNum);
-                                }
                                 break;
                             }
                             // If our question was already used in the match, skip it
