@@ -95,10 +95,20 @@ namespace BibleCompiler2
         }
         private void createDirectories(string outputFilePath)
         {
-            string newPath = Path.Combine(outputFilePath, outputPath);
+            // Create the base path for the competition forms
+            string newPath = Path.Combine(outputFilePath, filePrefix + " Competition Forms");
             Directory.CreateDirectory(newPath);
-            Directory.CreateDirectory(Path.Combine(newPath, filePrefix + " Competition Study Guides"));
-            Directory.CreateDirectory(Path.Combine(newPath, filePrefix + " Competition Forms"));
+
+            // Create subfolders for each number of questions
+            Directory.CreateDirectory(Path.Combine(newPath, "25 Questions"));
+            Directory.CreateDirectory(Path.Combine(newPath, "20 Questions"));
+            Directory.CreateDirectory(Path.Combine(newPath, "13 Questions"));
+            Directory.CreateDirectory(Path.Combine(newPath, "12 Questions"));
+            Directory.CreateDirectory(Path.Combine(newPath, "10 Questions"));
+
+            // Create the base path for the competition study guides
+            string studyGuidePath = Path.Combine(outputFilePath, filePrefix + " Competition Study Guides");
+            Directory.CreateDirectory(studyGuidePath);
         }
         private void pageBreak()
         {
@@ -411,83 +421,89 @@ namespace BibleCompiler2
             }
         }
 
-        private void createComp()
+private void createComp()
+{
+    // --- Determine competition guide file and paths ---
+    string path = Path.Combine(outputPath, filePrefix + " Competition Study Guides");
+    string competitionFile = "";
+    if (rdbTbccompetition.Checked)
+    {
+        if (rdb25.Checked) competitionFile = "tbcCompetitionGuide25.txt";
+        else if (rdb20.Checked) competitionFile = "tbcCompetitionGuide20.txt";
+        else if (rdb13.Checked) competitionFile = "tbcCompetitionGuide13.txt";
+        else if (rdb12.Checked) competitionFile = "tbcCompetitionGuide12.txt";
+        else if (rdb10.Checked) competitionFile = "tbcCompetitionGuide10.txt";
+    }
+    else if (rdbKbccompetition.Checked)
+    {
+        if (rdb25.Checked) competitionFile = "kbcCompetitionGuide25.txt";
+        else if (rdb20.Checked) competitionFile = "kbcCompetitionGuide20.txt";
+    }
+    string baseFolder = (rdbTbccompetition.Checked)
+        ? Path.Combine(Application.StartupPath, "Data Files/Teens/Guides (25, 20, 13, 12, 10)")
+        : Path.Combine(Application.StartupPath, "Data Files/Kids/Guides (25, 20)");
+    string competitionFilePath = Path.Combine(baseFolder, competitionFile);
+
+    // --- Read Competition Number and Guide File ---
+    string selectedCompetitionNumber = "";
+    if (rdbC1.Checked) selectedCompetitionNumber = "1";
+    else if (rdbC2.Checked) selectedCompetitionNumber = "2";
+    else if (rdbC3.Checked) selectedCompetitionNumber = "3";
+    else if (rdbC4.Checked) selectedCompetitionNumber = "4";
+    else if (rdbC5.Checked) selectedCompetitionNumber = "5";
+    else if (rdbC6.Checked) selectedCompetitionNumber = "6";
+    selectedCompetitionInt = int.Parse(selectedCompetitionNumber);
+
+    List<string> compNumberList = new List<string>();
+    compOrderList = new List<string>();
+    List<string> compExtraList = new List<string>();
+    if (File.Exists(competitionFilePath))
+    {
+        while (true)
         {
-            // --- Determine competition guide file and paths ---
-            string path = Path.Combine(outputPath, filePrefix + " Competition Study Guides");
-            string competitionFile = "";
-            if (rdbTbccompetition.Checked)
-            { /* ... select TBC file ... */
-                if (rdb25.Checked) competitionFile = "tbcCompetitionGuide25.txt";
-                else if (rdb20.Checked) competitionFile = "tbcCompetitionGuide20.txt";
-                else if (rdb13.Checked) competitionFile = "tbcCompetitionGuide13.txt";
-                else if (rdb12.Checked) competitionFile = "tbcCompetitionGuide12.txt";
-                else if (rdb10.Checked) competitionFile = "tbcCompetitionGuide10.txt";
-            }
-            else if (rdbKbccompetition.Checked)
-            { /* ... select KBC file ... */
-                if (rdb25.Checked) competitionFile = "kbcCompetitionGuide25.txt";
-                else if (rdb20.Checked) competitionFile = "kbcCompetitionGuide20.txt";
-            }
-            string baseFolder = (rdbTbccompetition.Checked)
-                ? Path.Combine(Application.StartupPath, "Data Files/Teens/Guides (25, 20, 13, 12, 10)")
-                : Path.Combine(Application.StartupPath, "Data Files/Kids/Guides (25, 20)");
-            string competitionFilePath = Path.Combine(baseFolder, competitionFile);
-
-            // --- Read Competition Number and Guide File ---
-            string selectedCompetitionNumber = "";
-            if (rdbC1.Checked) selectedCompetitionNumber = "1";
-            else if (rdbC2.Checked) selectedCompetitionNumber = "2";
-            else if (rdbC3.Checked) selectedCompetitionNumber = "3";
-            else if (rdbC4.Checked) selectedCompetitionNumber = "4";
-            else if (rdbC5.Checked) selectedCompetitionNumber = "5";
-            else if (rdbC6.Checked) selectedCompetitionNumber = "6";
-            selectedCompetitionInt = int.Parse(selectedCompetitionNumber);
-
-            List<string> compNumberList = new List<string>();
-            compOrderList = new List<string>();
-            List<string> compExtraList = new List<string>();
-            if (File.Exists(competitionFilePath))
+            try
             {
-                while (true)
+                foreach (string line in File.ReadAllLines(competitionFilePath))
                 {
-                    try
-                    {
-                        foreach (string line in File.ReadAllLines(competitionFilePath))
-                        {
-                            string[] parts = line.Split('\t');
-                            compNumberList.Add(parts.Length > 0 ? parts[0].Trim() : "");
-                            compOrderList.Add(parts.Length > 1 ? parts[1].Trim() : "");
-                            compExtraList.Add(parts.Length > 2 ? parts[2].Trim() : "");
-
-                        }
-                        break;
-                    }
-
-                    catch (System.IO.IOException)
-                    {
-                        OpenFileException ofe = new OpenFileException();
-                        ofe.err(Path.GetFileName(docName), "EXCEL");
-                    }
+                    string[] parts = line.Split('\t');
+                    compNumberList.Add(parts.Length > 0 ? parts[0].Trim() : "");
+                    compOrderList.Add(parts.Length > 1 ? parts[1].Trim() : "");
+                    compExtraList.Add(parts.Length > 2 ? parts[2].Trim() : "");
                 }
+                break;
             }
-
-            else
+            catch (System.IO.IOException)
             {
-                MessageBox.Show($"Error: Competition guide file not found at {competitionFilePath}", "File Not Found", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return;
+                OpenFileException ofe = new OpenFileException();
+                ofe.err(Path.GetFileName(docName), "EXCEL");
             }
+        }
+    }
+    else
+    {
+        MessageBox.Show($"Error: Competition guide file not found at {competitionFilePath}", "File Not Found", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        return;
+    }
 
-            // --- Populate Main Match Questions ---
-            // Usage
-            var questions = matchList(); // Populates quarList and mList
-            List<List<Questions>> selectedQs = questions.Item1;
-            List<List<Questions>> extraQs = questions.Item2;
+    // --- Populate Main Match Questions ---
+    var questions = matchList(); // Populates quarList and mList
+    List<List<Questions>> selectedQs = questions.Item1;
+    List<List<Questions>> extraQs = questions.Item2;;
+
+        // --- Initialize tracking for used questions ---
+        List<Questions> allQuestionsForSelectedComp = questionsActiveList
+            .Where(q => (tkj == "TBC" ? q.competitionTBC : q.competitionKBC) == selectedCompetitionInt.ToString())
+            .ToList();
+        HashSet<Questions> questionsUsedSoFar = new HashSet<Questions>();
+
+        // --- Main Loop ---
+        for (int i = 1; i <= 4; i++) // 4 Matches
+        {
             // --- Prepare Output Document ---
-            competitionDocName = Path.Combine(outputPath, filePrefix + " Competition Forms",
-                 filePrefix + " " + tkj + " Competition " + getCompetitionNumberName() + " " + getCompetitionOrderName() + " Questions.docx");
+            string timestamp = DateTime.Now.ToString("HH mm"); // Time in 24-hour format
+            string matchDocName = Path.Combine(path, $"{tkj} {filePrefix} C{getCompetitionNumberName()} M{i} {timestamp}.docx");
             // Use a 'using' statement
-            using (DocX compDocument = DocX.Create(competitionDocName, DocumentTypes.Document))
+            using (DocX compDocument = DocX.Create(matchDocName, DocumentTypes.Document))
             {
                 compDocument.PageHeight = 792;
                 compDocument.PageWidth = 612;
@@ -495,118 +511,66 @@ namespace BibleCompiler2
                 compDocument.MarginBottom = margin;
                 compDocument.MarginLeft = margin;
                 compDocument.MarginRight = margin;
+            // Add Match Header
+            insertMatchHeader(compDocument, i);
 
-                // --- Initialize tracking for used questions ---
-                List<Questions> allQuestionsForSelectedComp = questionsActiveList
-                    .Where(q => (tkj == "TBC" ? q.competitionTBC : q.competitionKBC) == selectedCompetitionInt.ToString())
-                    .ToList();
-                HashSet<Questions> questionsUsedSoFar = new HashSet<Questions>();
-
-                // --- Setup variables needed in the loop ---
-                int num = 0; // This will hold the competition size (e.g., 25)
-                int.TryParse(getCompetitionOrderName(), out num);
-
-                // --- Main Loop (Using User's Structure with Minimal Fixes) ---
-                for (int i = 1; i < 5; i++) // Hardcoded 4 iterations, 'i' is Match Number 1-4
+            // Add Questions for the Match
+            for (int j = 0; j < selectedQs[i - 1].Count; j++)
+            {
+                if (compExtraList[j] == "B")
                 {
-                    // Add Match Header
-                    insertMatchHeader(compDocument, i);
-                    // Add Match Header
-                    List<Questions> mainQuestionsThisMatch = new List<Questions>(); // Store questions added by inner loop
-
-                    // Writes the standard questions
-                    for (int j = 0; j < selectedQs[i - 1].Count; j++)
-                    {
-                        if (compExtraList[j] == "B")
-                        {
-                            insertBonusOrNewQuizzerHeader(compDocument, "THIS IS A BONUS QUESTION FOR THOSE WHO HAVE NOT ANSWERED A QUESTION CORRECTLY");
-                            //Console.WriteLine(selectedQs[i - 1][j].ToString());
-                        }
-                        else if (compExtraList[j] == "NQ")
-                        {
-                            insertBonusOrNewQuizzerHeader(compDocument, "THIS IS A NEW QUIZZER ONLY QUESTION");
-                            //Console.WriteLine(selectedQs[i - 1][j].ToString());
-                        }
-                        insertQuestionFormattedTable(compDocument, selectedQs[i - 1][j], compNumberList[j].ToString());
-                        //Console.WriteLine(selectedQs[i - 1][j].ToString());
-
-                    } // End inner loop 'j'
-                    pageBreak();
-
-
-                    // --- EXTRAS LOGIC (Call helper with updated used set) ---
-                    
-
-                    // Insert the main "Extra Questions" header
-                    insertExtraQuestionsHeader(compDocument);
-
-                    // Track if a header has already been added for general questions
-                    bool generalHeaderAdded = false;
-
-                    for (int j = 0; j < extraQs[i - 1].Count; j++)
-                    {
-                        // Get the full type name from the dictionary
-                        string questionType = extraQs[i - 1][j].type;
-                        string fullTypeName = qTypeDict.ContainsKey(questionType) ? qTypeDict[questionType] : questionType;
-
-                        // Add a subsection header for non-general questions or the first general question
-                        if (questionType == "G")
-                        {
-                            if (!generalHeaderAdded)
-                            {
-                                insertExtraSubsectionHeader(compDocument, $" {fullTypeName}");
-                                generalHeaderAdded = true;
-                            }
-                        }
-                        else
-                        {
-                            insertExtraSubsectionHeader(compDocument, $"{fullTypeName}");
-                        }
-
-                        // Insert the question table
-                        insertQuestionFormattedTable(compDocument, extraQs[i - 1][j], "__");
-                    }               
-
-                    // --- PAGE BREAK LOGIC---
-                    // Add page break after match 'i' and its extras, unless it's the last one (i=4)
-                    if (i < 4) // Loop runs for i = 1, 2, 3, 4. Break after 1, 2, 3.
-                    {
-                        compDocument.InsertParagraph().InsertPageBreakAfterSelf();
-                    }
-
-                } // End outer loop 'i'
-
-                try
-                {
-                    compDocument.Save();
+                    insertBonusOrNewQuizzerHeader(compDocument, "THIS IS A BONUS QUESTION FOR THOSE WHO HAVE NOT ANSWERED A QUESTION CORRECTLY");
                 }
-                catch (System.IO.IOException)
+                else if (compExtraList[j] == "NQ")
                 {
-                    // Notify the user to close the document
-                    OpenFileException ofe = new OpenFileException();
-                    ofe.err(Path.GetFileName(competitionDocName));
+                    insertBonusOrNewQuizzerHeader(compDocument, "THIS IS A NEW QUIZZER ONLY QUESTION");
+                }
+                insertQuestionFormattedTable(compDocument, selectedQs[i - 1][j], compNumberList[j].ToString());
+            }
 
-                    // Retry saving the document after the user closes it
-                    bool fileSaved = false;
-                    while (!fileSaved)
+            // Add Extra Questions
+            insertExtraQuestionsHeader(compDocument);
+            foreach (var extraQuestion in extraQs[i - 1])
+            {
+                insertQuestionFormattedTable(compDocument, extraQuestion, "__");
+            }
+
+            // Add Page Break (except after the last match)
+            if (i < 4)
+            {
+                compDocument.InsertParagraph().InsertPageBreakAfterSelf();
+            }
+        
+
+            // --- Save Document ---
+            try
+            {
+                compDocument.Save();
+            }
+            catch (System.IO.IOException)
+            {
+                OpenFileException ofe = new OpenFileException();
+                ofe.err(Path.GetFileName(matchDocName));
+
+                // Retry saving the document after the user closes it
+                bool fileSaved = false;
+                while (!fileSaved)
+                {
+                    try
                     {
-                        try
-                        {
-                            compDocument.Save();
-                            fileSaved = true; // Exit the loop if saving succeeds
-                        }
-                        catch (System.IO.IOException)
-                        {
-                            // Notify the user again if the file is still open
-                            ofe.err(Path.GetFileName(competitionDocName));
-                        }
+                        compDocument.Save();
+                        fileSaved = true;
+                    }
+                    catch (System.IO.IOException)
+                    {
+                        ofe.err(Path.GetFileName(matchDocName));
                     }
                 }
-
-            } // End using compDocument
-        } // End createComp
-
-
+            }
+        System.Diagnostics.Process.Start(matchDocName);
+        }
+    }
+}
         private void createStudyGuide()
         {
             compNumber = "0";  // Reset the global competition number so sections order correctly.
@@ -925,7 +889,7 @@ namespace BibleCompiler2
             {
                 createComp();
 
-                System.Diagnostics.Process.Start(competitionDocName);
+                //System.Diagnostics.Process.Start(competitionDocName);
             }
             // Study Guide
             else
