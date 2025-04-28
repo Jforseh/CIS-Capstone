@@ -542,14 +542,7 @@ private void createComp()
             foreach (var extraQuestion in extraQs[i - 1])
             {
                 insertQuestionFormattedTable(compDocument, extraQuestion, "__");
-            }
-
-            // Add Page Break (except after the last match)
-            if (i < 4)
-            {
-                compDocument.InsertParagraph().InsertPageBreakAfterSelf();
-            }
-        
+            }        
 
             // --- Save Document ---
             try
@@ -1106,38 +1099,9 @@ private void createComp()
         {
             return string.Format("  {0, -8}|{1, 5}  ", s1, s2);
         }       
-        private void createSeed()
-        {
-            compSeed.Clear();
-            this.Text = quarList.Count.ToString();
-            //lsbTest.Items.Clear();
-            var seed = new Random(0);
-            for (int i = 0; i < verseCount.Count; i++)
-            {
-                int seednum = seed.Next(0, verseCount.Count);
-                if (verseCount[seednum].StartsWith(selectedCompetitionInt.ToString()))
-                {
-                    if (!compSeed.Contains(verseCount[seednum]))
-                    {
-                        compSeed.Add(verseCount[seednum]);
-                        lsbTest2.Items.Add(verseCount[seednum]);
-                    }
-                }
-                else
-                {
-                    i--;
-                }
-
-
-            }
-            lsbTest2.Items.Add("-------------");
-
-        }
 
         private (List<List<Questions>>, List<List<Questions>>) matchList()
         {
-            //ToDo Remove CreateSeed
-            createSeed();
             int f2sUsed = 0;
 
             // Store our selected questions for each match
@@ -1561,22 +1525,22 @@ private void createComp()
             }
         }
         private void insertBonusOrNewQuizzerHeader(DocX compDocument, string lineText)
-        {
+{
             Table specialTable = compDocument.AddTable(1, 3);
             specialTable.SetWidths(new float[] { 10, 10, 580 });
-            studyGuideTableBorderSetup(specialTable, 0);
+    studyGuideTableBorderSetup(specialTable, 0);
             specialTable.Rows[0].MergeCells(0, 2);
-            specialTable.Rows[0].Cells[0].Paragraphs[0]
-                .Append(lineText)
-                .Font(font)
-                .FontSize(10)
-                .Bold()
-                .Highlight(Highlight.yellow)
+    specialTable.Rows[0].Cells[0].Paragraphs[0]
+        .Append(lineText)
+        .Font(font)
+        .FontSize(10)
+        .Bold()
+        .Highlight(Highlight.yellow)
                 .KeepWithNextParagraph()
-                .Alignment = Alignment.left;
+        .Alignment = Alignment.left;
             compDocument.InsertTable(specialTable);
             compDocument.InsertParagraph().Append("").Font(font).FontSize(spaceFontSize);
-        }
+}
 
         private void insertExtraSubsectionHeader(DocX compDocument, string headerText)
         {
