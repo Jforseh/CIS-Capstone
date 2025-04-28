@@ -80,6 +80,8 @@
             this.rdbTbccompetition = new System.Windows.Forms.RadioButton();
             this.btnSubmit = new System.Windows.Forms.Button();
             this.btnExit = new System.Windows.Forms.Button();
+            this.lsbTest2 = new System.Windows.Forms.ListBox();
+            this.lsbTest = new System.Windows.Forms.ListBox();
             this.menuStrip1.SuspendLayout();
             this.pnlCenter.SuspendLayout();
             this.pnlComp.SuspendLayout();
@@ -233,27 +235,6 @@
             this.pnlCenter.Name = "pnlCenter";
             this.pnlCenter.Size = new System.Drawing.Size(1508, 702);
             this.pnlCenter.TabIndex = 20;
-            // 
-            // lsbTest2
-            // 
-            this.lsbTest2.Font = new System.Drawing.Font("Lucida Console", 18F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lsbTest2.FormattingEnabled = true;
-            this.lsbTest2.ItemHeight = 24;
-            this.lsbTest2.Location = new System.Drawing.Point(890, 24);
-            this.lsbTest2.Name = "lsbTest2";
-            this.lsbTest2.Size = new System.Drawing.Size(615, 196);
-            this.lsbTest2.TabIndex = 31;
-            // 
-            // lsbTest
-            // 
-            this.lsbTest.Font = new System.Drawing.Font("Lucida Console", 18F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lsbTest.ForeColor = System.Drawing.Color.Black;
-            this.lsbTest.FormattingEnabled = true;
-            this.lsbTest.ItemHeight = 24;
-            this.lsbTest.Location = new System.Drawing.Point(1170, 228);
-            this.lsbTest.Name = "lsbTest";
-            this.lsbTest.Size = new System.Drawing.Size(335, 340);
-            this.lsbTest.TabIndex = 30;
             // 
             // lblOutputfilepath
             // 
@@ -671,6 +652,27 @@
             this.btnExit.UseVisualStyleBackColor = false;
             this.btnExit.Click += new System.EventHandler(this.btnExit_Click);
             // 
+            // lsbTest2
+            // 
+            this.lsbTest2.Font = new System.Drawing.Font("Lucida Console", 18F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lsbTest2.FormattingEnabled = true;
+            this.lsbTest2.ItemHeight = 24;
+            this.lsbTest2.Location = new System.Drawing.Point(890, 24);
+            this.lsbTest2.Name = "lsbTest2";
+            this.lsbTest2.Size = new System.Drawing.Size(615, 196);
+            this.lsbTest2.TabIndex = 31;
+            // 
+            // lsbTest
+            // 
+            this.lsbTest.Font = new System.Drawing.Font("Lucida Console", 18F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lsbTest.ForeColor = System.Drawing.Color.Black;
+            this.lsbTest.FormattingEnabled = true;
+            this.lsbTest.ItemHeight = 24;
+            this.lsbTest.Location = new System.Drawing.Point(1170, 228);
+            this.lsbTest.Name = "lsbTest";
+            this.lsbTest.Size = new System.Drawing.Size(335, 340);
+            this.lsbTest.TabIndex = 30;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -751,8 +753,8 @@
         private System.Windows.Forms.RadioButton rdbTbccompetition;
         private System.Windows.Forms.Button btnSubmit;
         private System.Windows.Forms.Button btnExit;
-        private System.Windows.Forms.ListBox lsbTest;
         private System.Windows.Forms.ListBox lsbTest2;
+        private System.Windows.Forms.ListBox lsbTest;
     }
 }
 
