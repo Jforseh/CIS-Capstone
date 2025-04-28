@@ -1176,8 +1176,8 @@ private void createComp()
                     // Priority:
                     // 1. Question has not been used in the current match
                     // 2. BCV can't be used in last 3 questions                    
-                    // 3. Question has not been used in the competition
-                    // 4. BCV has not been used in the match
+                    // 3. BCV has not been used in the match
+                    // 4. Question has not been used in the competition
 
                     List<Questions> potentialQuestions = new List<Questions>();
                     List<Questions> nextPotentialQuestions = new List<Questions>();
@@ -1260,15 +1260,26 @@ private void createComp()
                     }
 
                     //PRIORITY 3
-                    //Question has not been used in the competition
+                    // BCV has not been used in the match                    
+                    bool addQuestion = true;
                     foreach (Questions question in potentialQuestions)
                     {
-                        
-                        if (allUsedQuestions.Contains(question))
+                        addQuestion = true;
+                        for (int i = matchQuestions.Count - 1; i >= 0; i--)
                         {
-                            continue; // Skip to next question
+                            if (matchQuestions[i].book == question.book &&
+                                matchQuestions[i].chapter == question.chapter &&
+                                matchQuestions[i].verse == question.verse)
+                            {
+                                addQuestion = false;
+                                break;
+                            }
                         }
-                        nextPotentialQuestions.Add(question);
+                        if (addQuestion)
+                            {
+                            // Add the question to the list of potentials
+                            nextPotentialQuestions.Add(question);
+                            }
                     }
                     // If no questions meet the first priority, reset to all potential questions
                     if (nextPotentialQuestions.Count > 0)
@@ -1282,21 +1293,13 @@ private void createComp()
                     }
 
                     // PRIORITY 4
-                    // BCV has not been used in the match
-                    bool addQuestion = true;
+                    //Question has not been used in the competition
                     foreach (Questions question in potentialQuestions)
-                    {
-                        // Check if the question's BCV is already used in the match
+                    {                        
                         addQuestion = true;
-                        for (int i = matchQuestions.Count - 1; i >= 0; i--)
+                        if (allUsedQuestions.Contains(question))
                         {
-                            if (matchQuestions[i].book == question.book &&
-                                matchQuestions[i].chapter == question.chapter &&
-                                matchQuestions[i].verse == question.verse)
-                            {
-                                addQuestion = false;
-                                break;
-                            }
+                            addQuestion = false; // Question has been used in the competition                    
                         }
 
                         //Add the first question that meets the critera
