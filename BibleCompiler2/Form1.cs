@@ -424,8 +424,17 @@ namespace BibleCompiler2
 private void createComp()
 {
     // --- Determine competition guide file and paths ---
-    string path = Path.Combine(outputPath, filePrefix + " Competition Study Guides");
+    string path = Path.Combine(outputPath, filePrefix + " Competition Forms");
     string competitionFile = "";
+    string subfolder = "";
+    if (rdb25.Checked) subfolder = "25 Questions";
+    else if (rdb20.Checked) subfolder = "20 Questions";
+    else if (rdb13.Checked) subfolder = "13 Questions";
+    else if (rdb12.Checked) subfolder = "12 Questions";
+    else if (rdb10.Checked) subfolder = "10 Questions";
+    // --- Create the subfolder path ---
+    string subfolderPath = Path.Combine(path, subfolder);
+    Directory.CreateDirectory(subfolderPath); // Ensure the subfolder exists
     if (rdbTbccompetition.Checked)
     {
         if (rdb25.Checked) competitionFile = "tbcCompetitionGuide25.txt";
@@ -501,7 +510,7 @@ private void createComp()
         {
             // --- Prepare Output Document ---
             string timestamp = DateTime.Now.ToString("HH mm"); // Time in 24-hour format
-            string matchDocName = Path.Combine(path, $"{tkj} {filePrefix} C{getCompetitionNumberName()} M{i} {timestamp}.docx");
+            string matchDocName = Path.Combine(subfolderPath, $"{tkj} {filePrefix} C{getCompetitionNumberName()} M{i} {timestamp}.docx");
             // Use a 'using' statement
             using (DocX compDocument = DocX.Create(matchDocName, DocumentTypes.Document))
             {
