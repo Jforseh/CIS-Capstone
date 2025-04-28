@@ -972,7 +972,7 @@ private void createComp()
             radioBtn();                                      // set tkj = "KBC" & rebuild list
             countTypes();                                    // refresh counts
             maxrdbCount(maxKComp);
-            checkKBCButtonState();
+            rdb25.Checked = true;
         }
         private void checkKBCButtonState()
         {
@@ -980,8 +980,7 @@ private void createComp()
             bool isCompetitionSizeSelected = rdb25.Checked || rdb20.Checked;
 
             // Enable the Submit button only if both input and output paths are set and a competition size is selected
-            //ToDo: Uncomment this line and test to make sure rdbKBC 25 and 20 work
-            //btnSubmit.Enabled = btnInputClicked && btnOutputClicked && isCompetitionSizeSelected;
+            btnSubmit.Enabled = btnInputClicked && btnOutputClicked && isCompetitionSizeSelected;
         }
 
         private void rdbTbcFirst3_CheckedChanged(object sender, EventArgs e)
@@ -1264,6 +1263,7 @@ private void createComp()
                     //Question has not been used in the competition
                     foreach (Questions question in potentialQuestions)
                     {
+                        
                         if (allUsedQuestions.Contains(question))
                         {
                             continue; // Skip to next question
@@ -1318,7 +1318,6 @@ private void createComp()
                     {
                         matchQuestionsSet.Add(potentialQuestions[0]);     
                         matchQuestions.Add(potentialQuestions[0]);
-                        //lsbTest.Items.Add(questionNum.ToString() + " " + potentialQuestions[0].ToString());
                         if (potentialQuestions[0].type == "F2")
                         {
                             f2sUsed++;
@@ -2003,6 +2002,36 @@ private void createComp()
         private void rdb10_CheckedChanged_1(object sender, EventArgs e)
         {
             btnSubmit.Enabled = !string.IsNullOrEmpty(inputPath) && !string.IsNullOrEmpty(outputPath);
+        }
+
+        private void rdbC1_CheckedChanged_1(object sender, EventArgs e)
+        {
+            checkKBCButtonState();
+        }
+
+        private void rdbC2_CheckedChanged_1(object sender, EventArgs e)
+        {
+            checkKBCButtonState();
+        }
+
+        private void rdbC3_CheckedChanged_1(object sender, EventArgs e)
+        {
+            checkKBCButtonState();
+        }
+
+        private void rdbC4_CheckedChanged_1(object sender, EventArgs e)
+        {
+            checkKBCButtonState();
+        }
+
+        private void rdbC5_CheckedChanged_1(object sender, EventArgs e)
+        {
+            checkKBCButtonState();
+        }
+
+        private void rdbC6_CheckedChanged_1(object sender, EventArgs e)
+        {
+            checkKBCButtonState();
         }
         //</Functions for the Buttons>
         //</Functions for the Menu Strip>
