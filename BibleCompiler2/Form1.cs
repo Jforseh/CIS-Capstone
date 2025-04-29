@@ -1283,10 +1283,10 @@ namespace BibleCompiler2
                             }
                         }
                         if (addQuestion)
-                            {
+                        {
                             // Add the question to the list of potentials
                             nextPotentialQuestions.Add(question);
-                            }
+                        }
                     }
                     // If no questions meet the first priority, reset to all potential questions
                     if (nextPotentialQuestions.Count > 0)
@@ -1302,7 +1302,7 @@ namespace BibleCompiler2
                     // PRIORITY 4
                     //Question has not been used in the competition
                     foreach (Questions question in potentialQuestions)
-                    {                        
+                    {
                         addQuestion = true;
                         if (allUsedQuestions.Contains(question))
                         {
@@ -2014,35 +2014,6 @@ namespace BibleCompiler2
             btnSubmit.Enabled = !string.IsNullOrEmpty(inputPath) && !string.IsNullOrEmpty(outputPath);
         }
 
-        private void rdbC1_CheckedChanged_1(object sender, EventArgs e)
-        {
-            checkKBCButtonState();
-        }
-
-        private void rdbC2_CheckedChanged_1(object sender, EventArgs e)
-        {
-            checkKBCButtonState();
-        }
-
-        private void rdbC3_CheckedChanged_1(object sender, EventArgs e)
-        {
-            checkKBCButtonState();
-        }
-
-        private void rdbC4_CheckedChanged_1(object sender, EventArgs e)
-        {
-            checkKBCButtonState();
-        }
-
-        private void rdbC5_CheckedChanged_1(object sender, EventArgs e)
-        {
-            checkKBCButtonState();
-        }
-
-        private void rdbC6_CheckedChanged_1(object sender, EventArgs e)
-        {
-            checkKBCButtonState();
-        }
         //</Functions for the Buttons>
         //</Functions for the Menu Strip>
     }

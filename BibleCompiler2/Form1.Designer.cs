@@ -80,8 +80,6 @@
             this.rdbTbccompetition = new System.Windows.Forms.RadioButton();
             this.btnSubmit = new System.Windows.Forms.Button();
             this.btnExit = new System.Windows.Forms.Button();
-            this.lsbTest2 = new System.Windows.Forms.ListBox();
-            this.lsbTest = new System.Windows.Forms.ListBox();
             this.menuStrip1.SuspendLayout();
             this.pnlCenter.SuspendLayout();
             this.pnlComp.SuspendLayout();
