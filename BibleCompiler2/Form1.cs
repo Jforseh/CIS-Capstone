@@ -480,7 +480,8 @@ namespace BibleCompiler2
                     catch (System.IO.IOException)
                     {
                         OpenFileException ofe = new OpenFileException();
-                        ofe.err(Path.GetFileName(docName), "EXCEL");
+                        string fileType = Path.GetExtension(competitionFilePath).Equals(".xlsx", StringComparison.OrdinalIgnoreCase) ? "EXCEL" : "WORD";
+                        ofe.err(Path.GetFileName(competitionFilePath), fileType);
                     }
                 }
             }
@@ -533,38 +534,38 @@ namespace BibleCompiler2
                         insertQuestionFormattedTable(compDocument, selectedQs[i - 1][j], compNumberList[j].ToString());
                     }
 
-       // Add Extra Questions
-        if (extraQs[i - 1] != null && extraQs[i - 1].Count > 0)
-        {
-            insertExtraQuestionsHeader(compDocument); // Ensure this is called for every match
-            bool generalHeaderAdded = false;
+                    // Add Extra Questions
+                    if (extraQs[i - 1] != null && extraQs[i - 1].Count > 0)
+                    {
+                        insertExtraQuestionsHeader(compDocument); // Ensure this is called for every match
+                        bool generalHeaderAdded = false;
 
-            foreach (var extraQuestion in extraQs[i - 1])
-            {
-                if (extraQuestion.type == "G" && !generalHeaderAdded)
-                {
-                    insertExtraSubsectionHeader(compDocument, "General");
-                    generalHeaderAdded = true; // Ensure the header is added only once
-                }
-                else if (extraQuestion.type == "F")
-                {
-                    insertExtraSubsectionHeader(compDocument, "Finish the Verse");
-                }
-                else if (extraQuestion.type == "R")
-                {
-                    insertExtraSubsectionHeader(compDocument, "Reference Questions");
-                }
-                else if (extraQuestion.type == "M")
-                {
-                    insertExtraSubsectionHeader(compDocument, "Multiple Choice");
-                }
-                else if (extraQuestion.type == "Q")
-                {
-                    insertExtraSubsectionHeader(compDocument, "Quote Questions");
-                }
-                insertQuestionFormattedTable(compDocument, extraQuestion, "__");
-            }
-        }
+                        foreach (var extraQuestion in extraQs[i - 1])
+                        {
+                            if (extraQuestion.type == "G" && !generalHeaderAdded)
+                            {
+                                insertExtraSubsectionHeader(compDocument, "General");
+                                generalHeaderAdded = true; // Ensure the header is added only once
+                            }
+                            else if (extraQuestion.type == "F")
+                            {
+                                insertExtraSubsectionHeader(compDocument, "Finish the Verse");
+                            }
+                            else if (extraQuestion.type == "R")
+                            {
+                                insertExtraSubsectionHeader(compDocument, "Reference Questions");
+                            }
+                            else if (extraQuestion.type == "M")
+                            {
+                                insertExtraSubsectionHeader(compDocument, "Multiple Choice");
+                            }
+                            else if (extraQuestion.type == "Q")
+                            {
+                                insertExtraSubsectionHeader(compDocument, "Quote Questions");
+                            }
+                            insertQuestionFormattedTable(compDocument, extraQuestion, "__");
+                        }
+                    }
 
                     // --- Save Document ---
                     try
