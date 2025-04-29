@@ -23,7 +23,6 @@ namespace BibleCompiler2
         const string FILENAME2 = "QuestionType.txt";
         string outputPath;
         static string inputDataPath = "Data Files";
-        string competitionDocName;
         string inputPath;
         string inputPath2 = Path.Combine(inputDataPath, FILENAME2);
         static string docName = @"Competition Study Guide " + tkj + ".docx";
@@ -37,7 +36,6 @@ namespace BibleCompiler2
         int alnum = 0;
         int maxTComp = 0;
         int maxKComp = 0;
-        List<bool> f2True = new List<bool>();
         float margin = 36f; // 72 = 1 inch
         List<Questions> questionsActiveList = new List<Questions>();
         string compNumber = "0";
@@ -54,7 +52,6 @@ namespace BibleCompiler2
         //List<string> compSeed = new List<string>();
         string filePrefix = "";
         private HashSet<string> printedCompetitions = new HashSet<string>();
-        // TODO:
         //SET DEBUG TO FALSE BEFORE FINAL SUBMISSION 
         bool debug = false;
 
@@ -536,12 +533,38 @@ namespace BibleCompiler2
                         insertQuestionFormattedTable(compDocument, selectedQs[i - 1][j], compNumberList[j].ToString());
                     }
 
-                    // Add Extra Questions
-                    insertExtraQuestionsHeader(compDocument);
-                    foreach (var extraQuestion in extraQs[i - 1])
-                    {
-                        insertQuestionFormattedTable(compDocument, extraQuestion, "__");
-                    }
+       // Add Extra Questions
+        if (extraQs[i - 1] != null && extraQs[i - 1].Count > 0)
+        {
+            insertExtraQuestionsHeader(compDocument); // Ensure this is called for every match
+            bool generalHeaderAdded = false;
+
+            foreach (var extraQuestion in extraQs[i - 1])
+            {
+                if (extraQuestion.type == "G" && !generalHeaderAdded)
+                {
+                    insertExtraSubsectionHeader(compDocument, "General");
+                    generalHeaderAdded = true; // Ensure the header is added only once
+                }
+                else if (extraQuestion.type == "F")
+                {
+                    insertExtraSubsectionHeader(compDocument, "Finish the Verse");
+                }
+                else if (extraQuestion.type == "R")
+                {
+                    insertExtraSubsectionHeader(compDocument, "Reference Questions");
+                }
+                else if (extraQuestion.type == "M")
+                {
+                    insertExtraSubsectionHeader(compDocument, "Multiple Choice");
+                }
+                else if (extraQuestion.type == "Q")
+                {
+                    insertExtraSubsectionHeader(compDocument, "Quote Questions");
+                }
+                insertQuestionFormattedTable(compDocument, extraQuestion, "__");
+            }
+        }
 
                     // --- Save Document ---
                     try
@@ -826,37 +849,6 @@ namespace BibleCompiler2
                 btnSubmit.Enabled = true;
                 pnlDoc.Enabled = true;
             }
-            else
-            {
-                lsbTest.Visible = false;
-                lsbTest2.Visible = false;
-
-            }
-        }
-        // Helper method to return the selected order name (as a string) for the competition.
-        private string getCompetitionOrderName()
-        {
-            if (rdbTbccompetition.Checked)
-            {
-                if (rdb25.Checked)
-                    return "25";
-                else if (rdb20.Checked)
-                    return "20";
-                else if (rdb13.Checked)
-                    return "13";
-                else if (rdb12.Checked)
-                    return "12";
-                else if (rdb10.Checked)
-                    return "10";
-            }
-            else if (rdbKbccompetition.Checked)
-            {
-                if (rdb25.Checked)
-                    return "25";
-                else if (rdb20.Checked)
-                    return "20";
-            }
-            return "";
         }
 
         private string getCompetitionNumberName()
@@ -1156,7 +1148,6 @@ namespace BibleCompiler2
             }
 
             // Setup ran
-            //ToDo: no set seed for random number generator
             var random = new Random();
 
             // For each match
@@ -1252,7 +1243,6 @@ namespace BibleCompiler2
                             restartsCounter++;
                             matchNum--;
                             restartingFlag = true;
-                            lsbTest.Items.Add(restartsCounter.ToString() + " RESTARTING MATCH " + matchNum.ToString() + " - " + questionNum.ToString());
                             break;
                         }
                     }
@@ -1260,10 +1250,6 @@ namespace BibleCompiler2
                     {
                         potentialQuestions = new List<Questions>(nextPotentialQuestions);
                         nextPotentialQuestions.Clear();
-                    }
-                    else
-                    {
-                        lsbTest.Items.Add("BREAKING WITHIN 3 RULE");
                     }
 
                     //PRIORITY 3
@@ -1294,10 +1280,6 @@ namespace BibleCompiler2
                         potentialQuestions = new List<Questions>(nextPotentialQuestions);
                         nextPotentialQuestions.Clear();
                     }
-                    else
-                    {
-                        //lsbTest.Items.Add(questionNum.ToString() + "BREAKING USED IN COMPETITION RULE");
-                    }
 
                     // PRIORITY 4
                     //Question has not been used in the competition
@@ -1314,7 +1296,6 @@ namespace BibleCompiler2
                         {
                             matchQuestionsSet.Add(question);
                             matchQuestions.Add(question);
-                            //lsbTest.Items.Add(questionNum.ToString() + " " + question.ToString());
                             if (question.type == "F2")
                             {
                                 f2sUsed++;
@@ -1339,11 +1320,9 @@ namespace BibleCompiler2
                     for (int indexer = 0; indexer < matchQuestions.Count; indexer++)
                     {
                         Questions question = matchQuestions[indexer];
-                        lsbTest.Items.Add(indexer.ToString() + " " + question.ToString());
                         allUsedQuestions.Add(question);
                     }
                     selectedQs.Add(new List<Questions>(matchQuestions));
-                    lsbTest.Items.Add("-------------");
                     restartsCounter = 0;
 
                     //Create ExtraQs
@@ -1545,14 +1524,12 @@ namespace BibleCompiler2
         private void insertExtraSubsectionHeader(DocX compDocument, string headerText)
         {
             Paragraph header = compDocument.InsertParagraph();
-
             header.Append(headerText + ":")
-                  .Font(font)
-                  .FontSize(12)
-                  .Bold()
-                  .KeepWithNextParagraph()
-
-                  .Alignment = Alignment.center;
+                .Font(font)
+                .FontSize(12)
+                .Bold()
+                .KeepWithNextParagraph()
+                .Alignment = Alignment.center;
             header.SpacingAfter(spaceFontSize);
         }
 
